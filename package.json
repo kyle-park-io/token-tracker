@@ -1,0 +1,26 @@
+{
+  "name": "token-tracker",
+  "version": "1.0.0",
+  "repository": "git@github.com:kyle-park-io/token-tracker.git",
+  "license": "MIT",
+  "author": "kyle-park-io <andy3638@naver.com>",
+  "main": "index.js",
+  "scripts": {
+    "commit-last": "commitlint --from HEAD~1 --to HEAD",
+    "commit-lint": "commitlint --from main --to HEAD",
+    "husky-postinstall": "husky install",
+    "husky-postpack": "pinst --enable",
+    "husky-prepack": "pinst --disable",
+    "prettier-format": "prettier --write .",
+    "prettier-lint": "prettier --check ."
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^18.4.2",
+    "@commitlint/config-conventional": "^18.4.2",
+    "husky": "^8.0.0",
+    "pinst": "^3.0.0",
+    "prettier": "^3.3.1",
+    "sort-package-json": "^2.10.0"
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+}
