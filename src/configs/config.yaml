@@ -1,3 +1,9 @@
 app:
   name: 'Token-Tracker'
   version: '1.0.0'
+
+infura:
+  network: 'mainnet'
+  project-id: 'InputYourProjectId'
+  https_endpoint: 'https://mainnet.infura.io/v3/InputYourProjectId'
+  websocket_endpoint: 'wss://mainnet.infura.io/ws/v3/InputYourProjectId'

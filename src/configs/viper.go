@@ -1,15 +1,21 @@
 package configs
 
 import (
+	"errors"
+	"os"
+
 	"token-tracker/logger"
 
 	"github.com/spf13/viper"
 )
 
 func InitConfig() error {
-	viper.AddConfigPath("configs")
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
+	configPath := os.Getenv("CONFIG_PATH")
+	if configPath == "" {
+		return errors.New("CONFIG_PATH environment variable is not set")
+	}
+
+	viper.SetConfigFile(configPath)
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
