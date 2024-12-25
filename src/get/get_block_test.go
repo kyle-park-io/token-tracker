@@ -1,18 +1,16 @@
 package get
 
 import (
-	"os"
 	"testing"
 
 	"token-tracker/configs"
-	"token-tracker/logger"
 	"token-tracker/utils"
 )
 
 // go test -v -run TestGetBlockNumber
 func TestGetBlockNumber(t *testing.T) {
 
-	setEnv()
+	configs.SetEnv()
 
 	blockNumber, err := getBlockNumber()
 	if err != nil {
@@ -30,7 +28,7 @@ func TestGetBlockNumber(t *testing.T) {
 // go test -v -run TestGetBlockWithoutTxsByNumber
 func TestGetBlockWithoutTxsByNumber(t *testing.T) {
 
-	setEnv()
+	configs.SetEnv()
 
 	blockNumber, err := getBlockNumber()
 	if err != nil {
@@ -54,7 +52,7 @@ func TestGetBlockWithoutTxsByNumber(t *testing.T) {
 // go test -v -run TestGetBlockWithTxsByNumber
 func TestGetBlockWithTxsByNumber(t *testing.T) {
 
-	setEnv()
+	configs.SetEnv()
 
 	blockNumber, err := getBlockNumber()
 	if err != nil {
@@ -73,14 +71,4 @@ func TestGetBlockWithTxsByNumber(t *testing.T) {
 	}
 
 	t.Logf("Successfully fetched the block. Check it in the JSON file.")
-}
-
-func setEnv() {
-	logger.InitLogger()
-	logger.Log.Info("Hi! i'm token tracker.")
-
-	os.Setenv("CONFIG_PATH", "/home/kyle/code/token-tracker/src/configs/config.yaml")
-	if err := configs.InitConfig(); err != nil {
-		logger.Log.Fatalf("Check Errors, %v", err)
-	}
 }
