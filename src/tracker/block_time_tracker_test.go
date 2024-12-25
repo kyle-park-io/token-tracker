@@ -52,8 +52,8 @@ forLoop:
 
 					keyStr, _ := key.(string)
 					valueStr, _ := value.(string)
-					t, _ := ConvertBlockTimestamp(valueStr)
-					saved = append(saved, BlockTimestamp{Number: keyStr, Timestamp: t})
+					timestamp, _ := ConvertBlockTimestamp(valueStr)
+					saved = append(saved, BlockTimestamp{Number: keyStr, Timestamp: timestamp})
 
 					return true
 				})
@@ -67,7 +67,7 @@ forLoop:
 		}
 	}
 
-	timeFilePath := "/home/kyle/code/token-tracker/src/get/json/blockTimestamp.json"
+	timeFilePath := "/home/kyle/code/token-tracker/src/get/json/blockTimestamp-example.json"
 	err = utils.EnsureFileExists(timeFilePath)
 	if err != nil {
 		t.Error("Error checking file: ", err)
