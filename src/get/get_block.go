@@ -8,7 +8,7 @@ import (
 	"token-tracker/types/response"
 )
 
-func getBlockNumber() (response.BlockNumber, error) {
+func GetBlockNumber() (response.BlockNumber, error) {
 	// JSON-RPC request data
 	requestData := request.JSONRPCRequest{
 		JsonRpc: "2.0",
@@ -32,7 +32,7 @@ func getBlockNumber() (response.BlockNumber, error) {
 	return blockNumber, nil
 }
 
-func getBlockByNumber(blockNumber string, withTxs bool) (interface{}, error) {
+func GetBlockByNumber(blockNumber string, withTxs bool) (interface{}, error) {
 	// JSON-RPC request data
 	requestData := request.JSONRPCRequest{
 		JsonRpc: "2.0",
@@ -61,4 +61,27 @@ func getBlockByNumber(blockNumber string, withTxs bool) (interface{}, error) {
 		}
 		return block, nil
 	}
+}
+
+func GetBlockTimestampByNumber(blockNumber string) (string, error) {
+	// JSON-RPC request data
+	requestData := request.JSONRPCRequest{
+		JsonRpc: "2.0",
+		Method:  "eth_getBlockByNumber", // Fetch the block for the requested block number
+		Params:  []interface{}{blockNumber, false},
+		ID:      1,
+	}
+
+	// Send the HTTP request
+	resp, err := requestData.SendRequest()
+	if err != nil {
+		return "", err
+	}
+
+	var block response.BlockWithoutTransactions
+	if err := json.Unmarshal(resp.Result, &block); err != nil {
+		return "", fmt.Errorf("failed to parse Result as Block: %w", err)
+	}
+
+	return block.Timestamp, nil
 }

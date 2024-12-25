@@ -12,7 +12,7 @@ func TestGetBlockNumber(t *testing.T) {
 
 	configs.SetEnv()
 
-	blockNumber, err := getBlockNumber()
+	blockNumber, err := GetBlockNumber()
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,13 +30,13 @@ func TestGetBlockWithoutTxsByNumber(t *testing.T) {
 
 	configs.SetEnv()
 
-	blockNumber, err := getBlockNumber()
+	blockNumber, err := GetBlockNumber()
 	if err != nil {
 		t.Error(err)
 	}
 
 	withTxs := false
-	block, err := getBlockByNumber(string(blockNumber), withTxs)
+	block, err := GetBlockByNumber(string(blockNumber), withTxs)
 	if err != nil {
 		t.Error(err)
 	}
@@ -54,13 +54,13 @@ func TestGetBlockWithTxsByNumber(t *testing.T) {
 
 	configs.SetEnv()
 
-	blockNumber, err := getBlockNumber()
+	blockNumber, err := GetBlockNumber()
 	if err != nil {
 		t.Error(err)
 	}
 
 	withTxs := true
-	block, err := getBlockByNumber(string(blockNumber), withTxs)
+	block, err := GetBlockByNumber(string(blockNumber), withTxs)
 	if err != nil {
 		t.Error(err)
 	}
@@ -71,4 +71,22 @@ func TestGetBlockWithTxsByNumber(t *testing.T) {
 	}
 
 	t.Logf("Successfully fetched the block. Check it in the JSON file.")
+}
+
+// go test -v -run TestGetBlockTimestampByNumber
+func TestGetBlockTimestampByNumber(t *testing.T) {
+
+	configs.SetEnv()
+
+	blockNumber, err := GetBlockNumber()
+	if err != nil {
+		t.Error(err)
+	}
+
+	timestamp, err := GetBlockTimestampByNumber(string(blockNumber))
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Log("Hex Timestamp:", timestamp)
 }
