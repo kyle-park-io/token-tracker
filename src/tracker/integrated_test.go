@@ -46,7 +46,7 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 
 	// number of goroutine
 	nog := 1
-	numRecords := 10
+	numRecords := 30
 	// channel
 	isBlockWithDataChans := make([]chan map[string]struct{}, nog)
 	blockTimestampMapChan := make(chan Task)
@@ -74,6 +74,7 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 	ticker := time.NewTicker(time.Duration(intervalTime) * time.Second)
 	defer ticker.Stop()
 
+	count := 0
 	for {
 		select {
 
@@ -83,6 +84,7 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 
 			records := make(map[string]struct{}, numRecords)
 			for k, v := range task.HexTimestamps {
+				count++
 				BlockTimestampMap.Store(k, v)
 				BlockTimestampMap2.Store(k, v)
 				records[k] = struct{}{}
@@ -149,6 +151,7 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 				t.Error(err)
 			}
 
+			t.Log("Total count: ", count)
 			t.Log("EnhancedBlockTimestampRecorder execution completed.")
 			return
 		}

@@ -17,7 +17,7 @@ func TestGetBlockNumber(t *testing.T) {
 		t.Error(err)
 	}
 
-	d, err := utils.HexToDecimal(string(blockNumber))
+	d, err := utils.HexToDecimalString(string(blockNumber))
 	if err != nil {
 		t.Error(err)
 	}

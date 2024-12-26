@@ -1,145 +1,70 @@
 package tracker
 
 import (
-	"sync"
-	"sync/atomic"
-	"time"
+	"math"
 
 	"token-tracker/get"
 	"token-tracker/logger"
 	"token-tracker/utils"
 )
 
-type BlockTimestamp struct {
-	Number    string    `json:"number"`
-	Timestamp Timestamp `json:"timestamp"`
+type BlockPosition struct {
+	Low  int64 `json:"low"`
+	High int64 `json:"high"`
 }
 
-type Timestamp struct {
-	Hex       string    `json:"hex"`
-	Unix      int64     `json:"unix"`
-	LocalTime time.Time `json:"localTime"`
-}
+// Use binary search to find the position of the block.
+func TrackBlockTimestamp(targetTime int64) (BlockPosition, error) {
 
-var count int64
-var BlockTimestampMap sync.Map
-
-func RecordBlockTimestamp(currentBlockNumber string, numBlocks int64,
-	doneChan chan<- struct{}, errorChan chan<- error) {
-
-	for {
-		if count >= numBlocks {
-			doneChan <- struct{}{}
-			return
-		}
-
-		// Generate a random hexadecimal string less than the latest block number.
-		r, err := utils.RandomHexBelow(currentBlockNumber)
-		if err != nil {
-			errorChan <- err
-		}
-
-		logger.Log.Infof("Current number of recorded block: %d\n", count)
-		t, err := get.GetBlockTimestampByNumber(r)
-		if err != nil {
-			errorChan <- err
-			time.Sleep(1 * time.Second)
-			continue
-		}
-
-		BlockTimestampMap.Store(r, t)
-		atomic.AddInt64(&count, 1)
-	}
-}
-
-type Task struct {
-	Id            int               `json:"id"`
-	HexTimestamps map[string]string `json:"hexTimestamps"`
-}
-
-func EnhancedBlockTimestampRecorder(id int, currentBlockNumber string, numRecords int,
-	isBlockWithDataChan <-chan map[string]struct{},
-	blockTimestampMapChan chan<- Task, errorChan chan<- error) {
-
-	var initFn bool
-	var internalCount int64
-	var recordCount int
-	var IsBlockWithDataMap sync.Map
-	blockTimestampMap := make(map[string]string, numRecords)
-
-	for {
-		select {
-
-		// Executes the function with the highest priority,
-		// providing a performance advantage during execution.
-		case m := <-isBlockWithDataChan:
-			// TODO: Consider whether the counting process needs to be absolutely accurate.
-			for k, _ := range m {
-				IsBlockWithDataMap.Store(k, struct{}{})
-				atomic.AddInt64(&internalCount, 1)
-			}
-			initFn = true
-
-		default:
-
-			// Check whether the prioritized execution element has been executed.
-			if !initFn {
-				continue
-			}
-			// time.Sleep(time.Duration(math.MaxInt64))
-
-			// Generate a random hexadecimal string less than the latest block number.
-			r, err := utils.RandomHexBelow(currentBlockNumber)
-			if err != nil {
-				errorChan <- err
-			}
-
-			// Use sync.Map to check for duplicate keys.
-			_, ok := IsBlockWithDataMap.Load(r)
-			if ok {
-				logger.Log.Infof("Already have blockTimestamp, block: %s\n", r)
-				// time.Sleep(3 * time.Second)
-				continue
-			}
-
-			// TODO: Verify if introducing a time sleep upon receiving a 429 error from Infura can improve performance.
-			t, err := get.GetBlockTimestampByNumber(r)
-			if err != nil {
-				errorChan <- err
-				time.Sleep(1 * time.Second)
-				continue
-			}
-
-			logger.Log.Infof("ID: %d, Current number of recorded block: %d\n", id, internalCount)
-			blockTimestampMap[r] = t
-			recordCount++
-			IsBlockWithDataMap.Store(r, struct{}{})
-			atomic.AddInt64(&internalCount, 1)
-
-			// Send data to the main channel when the required number of records to log in the file is met.
-			if recordCount == numRecords {
-				task := Task{Id: id, HexTimestamps: blockTimestampMap}
-				blockTimestampMapChan <- task
-
-				// Initialize variables.
-				blockTimestampMap = make(map[string]string, numRecords)
-				recordCount = 0
-			}
-		}
-	}
-}
-
-func ConvertBlockTimestamp(hex string) (Timestamp, error) {
-
-	unix, err := utils.HexToUnix(hex)
+	startBlock := "0x0"
+	endBlock, err := get.GetBlockNumber()
 	if err != nil {
-		return Timestamp{}, err
-	}
-	localTime, err := utils.UnixToTime(unix, "Asia/Seoul")
-	if err != nil {
-		return Timestamp{}, err
+		return BlockPosition{}, err
 	}
 
-	t := Timestamp{hex, unix, localTime}
-	return t, nil
+	low, err := utils.HexToDecimal(startBlock)
+	if err != nil {
+		return BlockPosition{}, err
+	}
+	high, err := utils.HexToDecimal(string(endBlock))
+	if err != nil {
+		return BlockPosition{}, err
+	}
+
+	// Binary Search
+	for {
+		mid := (low + high) / 2
+		midBlock := utils.DecimalToHex(mid)
+
+		t, err := get.GetBlockTimestampByNumber(midBlock)
+		if err != nil {
+			return BlockPosition{}, err
+
+		}
+		timestamp, err := utils.HexToUnix(t)
+		if err != nil {
+			return BlockPosition{}, err
+		}
+
+		if timestamp == targetTime || math.Abs(float64(high)-float64(low)) == float64(1) {
+			logger.Log.Info("The timestamp has been found.")
+
+			if low <= high {
+				b := BlockPosition{Low: low, High: high}
+				return b, nil
+			} else {
+				b := BlockPosition{Low: high, High: low}
+				return b, nil
+			}
+		} else if timestamp < targetTime {
+			logger.Log.Info("The median value is smaller than the target time.")
+			logger.Log.Infof("low: %d, high: %d\n", low, high)
+
+			low = mid + 1
+		} else {
+			logger.Log.Info("The median value is bigger than the target time.")
+			logger.Log.Infof("low: %d, high: %d\n", low, high)
+			high = mid - 1
+		}
+	}
 }
