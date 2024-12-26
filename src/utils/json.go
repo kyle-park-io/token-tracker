@@ -66,7 +66,7 @@ func SaveJSONDirect(data interface{}, filename string) error {
 		return fmt.Errorf("failed to replace original file: %w", err)
 	}
 
-	fmt.Printf("JSON data has been written to %s\n", filename)
+	logger.Log.Infof("JSON data has been written to %s\n", filename)
 	return nil
 }
 
@@ -112,6 +112,6 @@ func SaveJSONBuffered(data interface{}, filename string) error {
 		return fmt.Errorf("failed to replace original file: %w", err)
 	}
 
-	fmt.Printf("JSON data has been written to %s\n", filename)
+	logger.Log.Infof("JSON data has been written to %s\n", filename)
 	return nil
 }

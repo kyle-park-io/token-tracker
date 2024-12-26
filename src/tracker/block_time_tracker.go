@@ -64,6 +64,7 @@ func TrackBlockTimestamp(targetTime int64) (BlockPosition, error) {
 		} else {
 			logger.Log.Info("The median value is bigger than the target time.")
 			logger.Log.Infof("low: %d, high: %d\n", low, high)
+
 			high = mid - 1
 		}
 	}

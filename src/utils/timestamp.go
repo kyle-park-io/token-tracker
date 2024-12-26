@@ -48,3 +48,18 @@ func UnixToTime(timestamp int64, timezone string) (time.Time, error) {
 	// Convert the Unix timestamp to time in the given timezone
 	return time.Unix(timestamp, 0).In(loc), nil
 }
+
+// TimeToUnix converts a time object to a Unix timestamp in the specified timezone.
+func TimeToUnix(t time.Time, timezone string) (int64, error) {
+	// Load the specified timezone location
+	loc, err := time.LoadLocation(timezone)
+	if err != nil {
+		return 0, fmt.Errorf("failed to load timezone: %v", err)
+	}
+
+	// Convert the time to the specified timezone
+	localTime := t.In(loc)
+
+	// Return the Unix timestamp
+	return localTime.Unix(), nil
+}
