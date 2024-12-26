@@ -16,6 +16,8 @@ type RPCError struct {
 
 type BlockNumber string
 
+type Balance string
+
 type BlockWithoutTransactions struct {
 	Block
 
