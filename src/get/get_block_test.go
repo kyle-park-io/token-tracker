@@ -73,6 +73,27 @@ func TestGetBlockWithTxsByNumber(t *testing.T) {
 	t.Logf("Successfully fetched the block. Check it in the JSON file.")
 }
 
+// go test -v -run TestGetBlockByNumber
+func TestGetBlockByNumber(t *testing.T) {
+
+	configs.SetEnv()
+
+	blockNumber := "0x133ea62"
+	withTxs := true
+
+	block, err := GetBlockByNumber(string(blockNumber), withTxs)
+	if err != nil {
+		t.Error(err)
+	}
+
+	filePath := "/home/kyle/code/token-tracker/src/get/json/block.json"
+	if err := utils.SaveJSONToFile(block, filePath); err != nil {
+		t.Error(err)
+	}
+
+	t.Logf("Successfully fetched the block. Check it in the JSON file.")
+}
+
 // go test -v -run TestGetBlockTimestampByNumber
 func TestGetBlockTimestampByNumber(t *testing.T) {
 
