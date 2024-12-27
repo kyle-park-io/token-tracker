@@ -1,19 +1,5 @@
 package response
 
-import "encoding/json"
-
-type JSONRPCResponse struct {
-	Jsonrpc string          `json:"jsonrpc"`
-	ID      int             `json:"id"`
-	Result  json.RawMessage `json:"result"`
-	Error   *RPCError       `json:"error,omitempty"`
-}
-
-type RPCError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
 type BlockNumber string
 
 type Balance string
@@ -87,26 +73,26 @@ type Transaction struct {
 	BlockHash        string `json:"blockHash"`        // 트랜잭션이 포함된 블록의 해시
 	BlockNumber      string `json:"blockNumber"`      // 트랜잭션이 포함된 블록의 번호
 	TransactionIndex string `json:"transactionIndex"` // 블록 내 트랜잭션의 인덱스
-	ChainID          string `json:"chainId"`          // 트랜잭션이 발생한 체인의 ID
+	ChainID          string `json:"chainId"`          // 트랜잭션이 발생한 체인의 ID (예: 이더리움 메인넷 0x1)
 	Type             string `json:"type"`             // 트랜잭션 유형 (예: Legacy, EIP-1559 등)
 
 	// 트랜잭션 실행 정보
 	From                 string `json:"from"`                 // 트랜잭션을 보낸 주소
 	To                   string `json:"to"`                   // 트랜잭션을 받는 주소
-	Value                string `json:"value"`                // 트랜잭션에서 전송된 금액
+	Value                string `json:"value"`                // 트랜잭션에서 전송된 금액 (Wei 단위)
 	Gas                  string `json:"gas"`                  // 트랜잭션 실행을 위해 제공된 가스량
 	GasPrice             string `json:"gasPrice"`             // 트랜잭션에 지불한 가스 가격
 	MaxFeePerGas         string `json:"maxFeePerGas"`         // 트랜잭션에서 허용된 최대 가스 요금 (EIP-1559 기준)
-	MaxPriorityFeePerGas string `json:"maxPriorityFeePerGas"` // 트랜잭션에서 허용된 최대 우선순위 가스 요금
+	MaxPriorityFeePerGas string `json:"maxPriorityFeePerGas"` // 트랜잭션에서 허용된 최대 우선순위 가스 요금 (채굴자 우선순위 보상을 위한 최대 비용)
 
 	// 트랜잭션 데이터 및 서명
 	Input   string `json:"input"`   // 트랜잭션 데이터 (바이트 코드 등)
-	Nonce   string `json:"nonce"`   // 트랜잭션 발신자의 논스 값
+	Nonce   string `json:"nonce"`   // 트랜잭션 발신자의 논스 값 (계정에서 보낸 트랜잭션의 순서)
 	R       string `json:"r"`       // 트랜잭션 서명의 R 값
 	S       string `json:"s"`       // 트랜잭션 서명의 S 값
 	V       string `json:"v"`       // 트랜잭션 서명의 V 값
 	YParity string `json:"yParity"` // 서명 검증에 사용된 Y 좌표의 패리티
 
 	// 트랜잭션 접근 정보
-	AccessList []interface{} `json:"accessList"` // 트랜잭션에서 접근 가능한 주소와 키 목록
+	AccessList []interface{} `json:"accessList"` // 트랜잭션에서 접근 가능한 주소와 키 목록(EIP-2930에 정의된 접근 가능 목록)
 }

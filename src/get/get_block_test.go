@@ -1,6 +1,7 @@
 package get
 
 import (
+	"fmt"
 	"testing"
 
 	"token-tracker/configs"
@@ -41,7 +42,7 @@ func TestGetBlockWithoutTxsByNumber(t *testing.T) {
 		t.Error(err)
 	}
 
-	filePath := "/home/kyle/code/token-tracker/src/get/json/block.json"
+	filePath := "/home/kyle/code/token-tracker/src/json/block.json"
 	if err := utils.SaveJSONToFile(block, filePath); err != nil {
 		t.Error(err)
 	}
@@ -65,7 +66,7 @@ func TestGetBlockWithTxsByNumber(t *testing.T) {
 		t.Error(err)
 	}
 
-	filePath := "/home/kyle/code/token-tracker/src/get/json/block.json"
+	filePath := "/home/kyle/code/token-tracker/src/json/block.json"
 	if err := utils.SaveJSONToFile(block, filePath); err != nil {
 		t.Error(err)
 	}
@@ -78,7 +79,11 @@ func TestGetBlockByNumber(t *testing.T) {
 
 	configs.SetEnv()
 
-	blockNumber := "0x133ea62"
+	bn := int64(21422131)
+	blockNumber := utils.DecimalToHex(bn)
+	fmt.Println(blockNumber)
+
+	// blockNumber := "0x133ea62"
 	withTxs := true
 
 	block, err := GetBlockByNumber(string(blockNumber), withTxs)
@@ -86,7 +91,12 @@ func TestGetBlockByNumber(t *testing.T) {
 		t.Error(err)
 	}
 
-	filePath := "/home/kyle/code/token-tracker/src/get/json/block.json"
+	fileName := "block.json"
+	folderPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/blocks/%s", blockNumber)
+	filePath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/blocks/%s/%s", blockNumber, fileName)
+	if err := utils.CreateFolderAndFile(folderPath, fileName); err != nil {
+		t.Error(err)
+	}
 	if err := utils.SaveJSONToFile(block, filePath); err != nil {
 		t.Error(err)
 	}

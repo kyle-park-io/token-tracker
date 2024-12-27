@@ -19,7 +19,7 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 
 	configs.SetEnv()
 
-	filePath := "/home/kyle/code/token-tracker/src/get/json/blockTimestamp.json"
+	filePath := "/home/kyle/code/token-tracker/src/json/blockTimestamp/blockTimestamp.json"
 	b, err := readJSONFile(filePath)
 	if err != nil {
 		t.Error(err)
@@ -114,7 +114,7 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 				return true
 			})
 
-			timeFilePath := "/home/kyle/code/token-tracker/src/get/json/blockTimestamp-temp.json"
+			timeFilePath := "/home/kyle/code/token-tracker/src/json/blockTimestamp/blockTimestamp-temp.json"
 			err = utils.EnsureFileExists(timeFilePath)
 			if err != nil {
 				t.Error("Error checking file: ", err)
@@ -140,7 +140,7 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 				return true
 			})
 
-			timeFilePath := "/home/kyle/code/token-tracker/src/get/json/blockTimestamp.json"
+			timeFilePath := "/home/kyle/code/token-tracker/src/json/blockTimestamp/blockTimestamp.json"
 			err = utils.EnsureFileExists(timeFilePath)
 			if err != nil {
 				t.Error("Error checking file: ", err)

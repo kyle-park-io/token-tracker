@@ -11,10 +11,18 @@ import (
 )
 
 // Keccak256 calculates the Keccak256 hash of the input data
-func Keccak256(data []byte) []byte {
+func Keccak256ToByte(data []byte) []byte {
 	hash := sha3.NewLegacyKeccak256()
 	hash.Write(data)
 	return hash.Sum(nil)
+}
+
+// Keccak256 calculates the Keccak256 hash of the input data
+func Keccak256ToString(data []byte) string {
+	hasher := sha3.NewLegacyKeccak256()
+	hasher.Write(data)
+	hash := hasher.Sum(nil)
+	return hex.EncodeToString(hash)
 }
 
 // EncodeUint256 encodes a uint256 value into a 32-byte hex representation
@@ -39,7 +47,7 @@ func CreateCallData(methodName string, paramTypes []string, params []interface{}
 	signature := fmt.Sprintf("%s(%s)", methodName, strings.Join(paramTypes, ","))
 
 	// Compute the Keccak256 hash of the method signature and take the first 4 bytes
-	hash := Keccak256([]byte(signature))
+	hash := Keccak256ToByte([]byte(signature))
 	functionSelector := hex.EncodeToString(hash[:4])
 
 	// Buffer to hold the encoded parameters

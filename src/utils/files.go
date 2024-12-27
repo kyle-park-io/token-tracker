@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"token-tracker/logger"
 )
@@ -45,4 +46,44 @@ func EnsureFileExists(filePath string) error {
 
 	// Unexpected error
 	return fmt.Errorf("error checking file: %w", err)
+}
+
+// CreateFolder creates a folder if it doesn't exist
+func CreateFolder(folderPath string) error {
+	// Check if the folder exists
+	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
+		// Create the folder (including parent directories if needed)
+		err := os.MkdirAll(folderPath, os.ModePerm)
+		if err != nil {
+			return fmt.Errorf("failed to create folder: %w", err)
+		}
+		fmt.Println("Folder created:", folderPath)
+	}
+
+	return nil
+}
+
+// CreateFolderAndFile creates a folder if it doesn't exist
+// and then creates a file inside that folder.
+func CreateFolderAndFile(folderPath, fileName string) error {
+	// Check if the folder exists
+	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
+		// Create the folder (including parent directories if needed)
+		err := os.MkdirAll(folderPath, os.ModePerm)
+		if err != nil {
+			return fmt.Errorf("failed to create folder: %w", err)
+		}
+		fmt.Println("Folder created:", folderPath)
+	}
+
+	// Create the file inside the folder
+	filePath := filepath.Join(folderPath, fileName)
+	file, err := os.Create(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %w", err)
+	}
+	defer file.Close() // Ensure the file is closed
+	fmt.Println("File created:", filePath)
+
+	return nil
 }

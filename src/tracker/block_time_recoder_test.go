@@ -67,7 +67,7 @@ forLoop:
 		}
 	}
 
-	timeFilePath := "/home/kyle/code/token-tracker/src/get/json/blockTimestamp-example.json"
+	timeFilePath := "/home/kyle/code/token-tracker/src/json/blockTimestamp/blockTimestamp-example.json"
 	err = utils.EnsureFileExists(timeFilePath)
 	if err != nil {
 		t.Error("Error checking file: ", err)

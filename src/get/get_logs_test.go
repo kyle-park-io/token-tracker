@@ -15,12 +15,12 @@ func TestGetLogs(t *testing.T) {
 	// Tether USD Contract Address
 	address := "0xdAC17F958D2ee523a2206206994597C13D831ec7"
 	params := EventLogsQuery{Address: address}
-	eventLogs, err := getLogs(params)
+	eventLogs, err := GetLogs(params)
 	if err != nil {
 		t.Error(err)
 	}
 
-	filePath := "/home/kyle/code/token-tracker/src/get/json/eventLogs.json"
+	filePath := "/home/kyle/code/token-tracker/src/json/eventLogs/eventLogs.json"
 	if err := utils.SaveJSONToFile(eventLogs, filePath); err != nil {
 		t.Error(err)
 	}

@@ -12,11 +12,12 @@ import (
 type EventLogsQuery struct {
 	FromBlock string   `json:"fromBlock,omitempty"` // Starting block for the logs query
 	ToBlock   string   `json:"toBlock,omitempty"`   // Ending block for the logs query
+	BlockHash string   `json:"blockHash,omitempty"` // Block hash for the logs query
 	Address   string   `json:"address,omitempty"`   // Address to filter logs by (contract or account)
 	Topics    []string `json:"topics,omitempty"`    // Topics to filter specific events
 }
 
-func getLogs(params EventLogsQuery) (interface{}, error) {
+func GetLogs(params EventLogsQuery) (interface{}, error) {
 	// JSON-RPC request data
 	requestData := request.JSONRPCRequest{
 		JsonRpc: "2.0",
