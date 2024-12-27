@@ -11,7 +11,7 @@ func TestTrackBlockTimestamp(t *testing.T) {
 
 	configs.SetEnv()
 
-	blockTimestamp := int64(234)
+	blockTimestamp := int64(1672113600)
 	position, err := TrackBlockTimestamp(blockTimestamp)
 	if err != nil {
 		t.Error(err)

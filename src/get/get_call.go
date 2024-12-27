@@ -20,7 +20,6 @@ func GetCallBalance(txArgs map[string]interface{}, tag string) (response.Balance
 	// Send the HTTP request
 	resp, err := requestData.SendRequest()
 	if err != nil {
-		fmt.Print("hi")
 		return "", err
 	}
 

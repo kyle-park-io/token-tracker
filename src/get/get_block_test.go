@@ -79,10 +79,8 @@ func TestGetBlockByNumber(t *testing.T) {
 
 	configs.SetEnv()
 
-	bn := int64(21422131)
+	bn := int64(21491650)
 	blockNumber := utils.DecimalToHex(bn)
-	fmt.Println(blockNumber)
-
 	// blockNumber := "0x133ea62"
 	withTxs := true
 

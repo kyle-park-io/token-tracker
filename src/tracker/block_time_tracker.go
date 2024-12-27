@@ -9,8 +9,14 @@ import (
 )
 
 type BlockPosition struct {
-	Low  int64 `json:"low"`
-	High int64 `json:"high"`
+	Low              int64  `json:"low"`
+	LowHex           string `json:"lowHex"`
+	LowTimestamp     int64  `json:"lowTimestamp,omitempty"`
+	LowTimestampHex  string `json:"lowTimestampHex,omitempty"`
+	High             int64  `json:"high"`
+	HighHex          string `json:"highHex"`
+	HighTimestamp    int64  `json:"highTimestamp,omitempty"`
+	HighTimestampHex string `json:"highTimestampHex,omitempty"`
 }
 
 // Use binary search to find the position of the block.
@@ -50,10 +56,10 @@ func TrackBlockTimestamp(targetTime int64) (BlockPosition, error) {
 			logger.Log.Info("The timestamp has been found.")
 
 			if low <= high {
-				b := BlockPosition{Low: low, High: high}
+				b := BlockPosition{Low: low, LowHex: utils.DecimalToHex(low), High: high, HighHex: utils.DecimalToHex(high)}
 				return b, nil
 			} else {
-				b := BlockPosition{Low: high, High: low}
+				b := BlockPosition{Low: high, LowHex: utils.DecimalToHex(high), High: low, HighHex: utils.DecimalToHex(low)}
 				return b, nil
 			}
 		} else if timestamp < targetTime {

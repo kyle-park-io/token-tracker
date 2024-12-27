@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"math/big"
+	"strings"
 )
 
 func DecimalToHex(bn int64) string {
@@ -33,4 +34,19 @@ func HexToDecimalString(bn string) (string, error) {
 	}
 
 	return num.String(), nil
+}
+
+func TrimLeadingZerosWithPrefix(hex string) string {
+	// Ensure the input starts with "0x"
+	if !strings.HasPrefix(hex, "0x") {
+		return hex // Return as-is if it's not a valid hex string
+	}
+	// Remove "0x" prefix for processing
+	trimmedHex := strings.TrimLeft(hex[2:], "0")
+	// If all digits are removed (e.g., input was all zeros), return "0x0"
+	if trimmedHex == "" {
+		return "0x0"
+	}
+	// Re-add "0x" prefix
+	return "0x" + trimmedHex
 }

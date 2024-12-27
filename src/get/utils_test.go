@@ -3,6 +3,7 @@ package get
 import (
 	"testing"
 
+	"token-tracker/configs"
 	"token-tracker/get/call"
 )
 
@@ -31,4 +32,57 @@ func TestDecodeTransferLog(t *testing.T) {
 	t.Logf("From: %s\n", event.From)
 	t.Logf("To: %s\n", event.To)
 	t.Logf("Value: %s\n", event.Value)
+}
+
+// go test -v -run TestDecodeRealTransferLog
+func TestDecodeRealTransferLog(t *testing.T) {
+
+	configs.SetEnv()
+
+	// Wrapped Ether Address
+	address := "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+	params := EventLogsQuery{Address: address}
+	e, err := GetLogs(params)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// transfer event signature
+	eventSignature := "Transfer(address,address,uint256)"
+	eventHash := "0x" + call.Keccak256ToString([]byte(eventSignature))
+
+	eventLogs, ok := e.([]map[string]interface{})
+	if !ok {
+		t.Error("check type.")
+	}
+
+	for _, eventLog := range eventLogs {
+		rawTopics, ok := eventLog["topics"].([]interface{})
+		if !ok {
+			t.Error("check type.")
+		}
+
+		if rawTopics[0] == eventHash {
+
+			topics := make([]string, len(rawTopics))
+			for i, topic := range rawTopics {
+				str, ok := topic.(string)
+				if !ok {
+					t.Error("expected string in topics")
+					return
+				}
+				topics[i] = str
+			}
+			data, ok := eventLog["data"].(string)
+			if !ok {
+				t.Error("check type.")
+			}
+
+			event := DecodeTransferLog(eventHash, topics, data)
+			t.Log("Transfer Event Detected:")
+			t.Logf("From: %s\n", event.From)
+			t.Logf("To: %s\n", event.To)
+			t.Logf("Value: %s\n", event.Value)
+		}
+	}
 }
