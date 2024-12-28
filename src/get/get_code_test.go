@@ -3,7 +3,7 @@ package get
 import (
 	"testing"
 
-	"token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/configs"
 )
 
 // go test -v -run TestGetCodeForEOA

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"token-tracker/configs"
-	"token-tracker/types/response"
-	"token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/types/response"
+	"github.com/kyle-park-io/token-tracker/utils"
 
 	"github.com/spf13/viper"
 )

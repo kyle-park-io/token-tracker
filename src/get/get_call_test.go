@@ -3,9 +3,9 @@ package get
 import (
 	"testing"
 
-	"token-tracker/configs"
-	"token-tracker/get/call"
-	"token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/get/call"
+	"github.com/kyle-park-io/token-tracker/utils"
 )
 
 // go test -v -run TestGetCallBalance

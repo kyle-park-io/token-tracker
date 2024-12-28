@@ -1,13 +1,15 @@
 {
   "account": "0x1E2aB9200B2Fe8832A55CACCB917872dB2715C31",
   "tokenAddress": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  "balance": "0x0",
+  "balance": "0",
+  "balanceHex": "0x0",
   "transfer_history": [
     {
       "txHash": "0xbf1c96b3c92016d07afc37b2f406f2d38d94a1930397429f1a4a7ef360e5e96c",
       "from": "0x1e2ab9200b2fe8832a55caccb917872db2715c31",
       "to": "0x88d6d76e71b6880851204c7822b3ccbb77b82211",
-      "value": "0x58d15e176280000",
+      "value": "400000000000000000",
+      "valueHex": "0x58d15e176280000",
       "timestamp": 1734363695
     }
   ]

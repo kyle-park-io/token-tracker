@@ -3,9 +3,9 @@ package tracker
 import (
 	"math"
 
-	"token-tracker/get"
-	"token-tracker/logger"
-	"token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/get"
+	"github.com/kyle-park-io/token-tracker/logger"
+	"github.com/kyle-park-io/token-tracker/utils"
 )
 
 type BlockPosition struct {

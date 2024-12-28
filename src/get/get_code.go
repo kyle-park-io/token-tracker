@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"token-tracker/types/request"
+	"github.com/kyle-park-io/token-tracker/types/request"
 )
 
 // block tag

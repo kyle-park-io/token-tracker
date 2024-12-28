@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"token-tracker/types/request"
-	"token-tracker/types/response"
+	"github.com/kyle-park-io/token-tracker/types/request"
+	"github.com/kyle-park-io/token-tracker/types/response"
 )
 
 func GetBlockNumber() (response.BlockNumber, error) {

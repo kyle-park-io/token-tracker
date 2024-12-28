@@ -2,9 +2,11 @@ package configs
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"strings"
 
-	"token-tracker/logger"
+	"github.com/kyle-park-io/token-tracker/logger"
 
 	"github.com/spf13/viper"
 )
@@ -21,6 +23,11 @@ func InitConfig() error {
 	if err := viper.ReadInConfig(); err != nil {
 		logger.Log.Errorf("Error reading config file: %v", err)
 		return err
+	}
+
+	infuraURL := viper.GetString("infura.https_endpoint")
+	if strings.Contains(infuraURL, "InputYour") {
+		return fmt.Errorf("change the Infura API URL: %s", infuraURL)
 	}
 
 	return nil

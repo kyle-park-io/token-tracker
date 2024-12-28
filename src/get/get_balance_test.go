@@ -3,8 +3,8 @@ package get
 import (
 	"testing"
 
-	"token-tracker/configs"
-	"token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/utils"
 )
 
 // go test -v -run TestGetBalance

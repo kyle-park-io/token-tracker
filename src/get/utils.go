@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"math/big"
 
-	"token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/utils"
 )
 
 type TransferEvent struct {

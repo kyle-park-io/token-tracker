@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"token-tracker/configs"
-	"token-tracker/get"
-	"token-tracker/types/response"
-	"token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/get"
+	"github.com/kyle-park-io/token-tracker/types/response"
+	"github.com/kyle-park-io/token-tracker/utils"
 
 	"github.com/spf13/viper"
 )
@@ -85,6 +85,7 @@ func TestTrackETH(t *testing.T) {
 		}
 
 		balance := ""
+		balanceHex := ""
 		bT := new(big.Int)
 		blockTimestamp, _ := bT.SetString(block.Timestamp[2:], 16)
 		if blockTimestamp.Cmp(nextDayBigInt) > 0 {
@@ -96,12 +97,14 @@ func TestTrackETH(t *testing.T) {
 			if err != nil {
 				t.Error(err)
 			}
-			balance = string(bal)
+			balanceHex = string(bal)
+			balance, _ = utils.HexToDecimalString(balanceHex)
 		}
 
 		if blockTimestamp.Cmp(dayBigInt) < 0 {
 
-			result := Result{Account: account, TokenAddress: tokenAddress, Balance: balance, TransferHistory: transferHistory}
+			result := Result{Account: account, TokenAddress: tokenAddress, Balance: balance, BalanceHex: balanceHex,
+				TransferHistory: transferHistory}
 			fileName := tokenAddress + ".json"
 			folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
 			filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
@@ -127,8 +130,9 @@ func TestTrackETH(t *testing.T) {
 					t.Error(err)
 				}
 
+				value, _ := utils.HexToDecimalString(transaction.Value)
 				transferHistory = append(transferHistory, TransferHistory{TxHash: transaction.Hash, From: transaction.From,
-					To: transaction.To, Value: transaction.Value, Timestamp: unixTimestamp})
+					To: transaction.To, Value: value, ValueHex: transaction.Value, Timestamp: unixTimestamp})
 				t.Logf("Transfer Info: from: %s, to: %s, value: %s\n", transaction.From, transaction.To, transaction.Value)
 
 				count++
@@ -140,7 +144,8 @@ func TestTrackETH(t *testing.T) {
 
 		if count >= targetCount {
 
-			result := Result{Account: account, TokenAddress: tokenAddress, Balance: balance, TransferHistory: transferHistory}
+			result := Result{Account: account, TokenAddress: tokenAddress, Balance: balance, BalanceHex: balanceHex,
+				TransferHistory: transferHistory}
 			fileName := tokenAddress + ".json"
 			folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
 			filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)

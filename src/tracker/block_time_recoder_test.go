@@ -3,10 +3,10 @@ package tracker
 import (
 	"testing"
 
-	"token-tracker/configs"
-	"token-tracker/get"
-	"token-tracker/logger"
-	"token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/get"
+	"github.com/kyle-park-io/token-tracker/logger"
+	"github.com/kyle-park-io/token-tracker/utils"
 
 	"github.com/spf13/viper"
 	"go.uber.org/zap"

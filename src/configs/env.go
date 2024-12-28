@@ -3,7 +3,7 @@ package configs
 import (
 	"os"
 
-	"token-tracker/logger"
+	"github.com/kyle-park-io/token-tracker/logger"
 
 	"github.com/spf13/viper"
 )

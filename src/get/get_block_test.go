@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"token-tracker/configs"
-	"token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/utils"
 
 	"github.com/spf13/viper"
 )

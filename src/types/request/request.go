@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"token-tracker/types/response"
+	"github.com/kyle-park-io/token-tracker/types/response"
 
 	"github.com/spf13/viper"
 )

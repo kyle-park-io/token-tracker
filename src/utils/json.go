@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"token-tracker/logger"
+	"github.com/kyle-park-io/token-tracker/logger"
 )
 
 // SaveJSONToFile saves JSON data to a file with indentation

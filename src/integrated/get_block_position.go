@@ -1,10 +1,10 @@
 package integrated
 
 import (
-	"token-tracker/get"
-	"token-tracker/logger"
-	"token-tracker/tracker"
-	"token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/get"
+	"github.com/kyle-park-io/token-tracker/logger"
+	"github.com/kyle-park-io/token-tracker/tracker"
+	"github.com/kyle-park-io/token-tracker/utils"
 )
 
 func GetBlockPosition(yearMonthDay string, timezone string) (tracker.BlockPosition, error) {

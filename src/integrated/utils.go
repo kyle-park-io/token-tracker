@@ -1,8 +1,8 @@
 package integrated
 
-import "token-tracker/utils"
+import "github.com/kyle-park-io/token-tracker/utils"
 
-func splitBlockRange(toBlockNumber, fromBlockNumber string, maxResults int64) [][]string {
+func SplitBlockRange(toBlockNumber, fromBlockNumber string, maxResults int64) [][]string {
 
 	toBlock, _ := utils.HexToDecimal(toBlockNumber)
 	fromBlock, _ := utils.HexToDecimal(fromBlockNumber)

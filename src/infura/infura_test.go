@@ -3,7 +3,7 @@ package infura
 import (
 	"testing"
 
-	"token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/configs"
 
 	"github.com/spf13/viper"
 )

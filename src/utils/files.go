@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"token-tracker/logger"
+	"github.com/kyle-park-io/token-tracker/logger"
 )
 
 // FileExists checks if the file exists and returns a boolean.

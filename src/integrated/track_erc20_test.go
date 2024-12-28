@@ -7,12 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"token-tracker/configs"
-	"token-tracker/get"
-	"token-tracker/get/call"
-	"token-tracker/types/response"
-	"token-tracker/utils"
-
+	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/get"
+	"github.com/kyle-park-io/token-tracker/get/call"
+	"github.com/kyle-park-io/token-tracker/types/response"
+	"github.com/kyle-park-io/token-tracker/utils"
 	"github.com/spf13/viper"
 )
 
@@ -72,6 +71,7 @@ func TestTrackERC20(t *testing.T) {
 	// ERC20
 	count := 0
 	balance := ""
+	balanceHex := ""
 	transferHistory := make([]TransferHistory, 0)
 	fromBlockNumber := ""
 	toBlockNumber := ""
@@ -116,7 +116,8 @@ forLoop:
 			if err != nil {
 				t.Error(err)
 			}
-			balance = utils.TrimLeadingZerosWithPrefix(string(bal))
+			balanceHex = utils.TrimLeadingZerosWithPrefix(string(bal))
+			balance, _ = utils.HexToDecimalString(balanceHex)
 
 			break forLoop
 		}
@@ -150,7 +151,7 @@ forLoop2:
 	eventHash := "0x" + call.Keccak256ToString([]byte(eventSignature))
 
 	maxResults := int64(200)
-	blockRanges := splitBlockRange(toBlockNumber, fromBlockNumber, maxResults)
+	blockRanges := SplitBlockRange(toBlockNumber, fromBlockNumber, maxResults)
 	for _, r := range blockRanges {
 		t.Logf("Find Transfer Event, FromBlock: %s, ToBlock: %s\n", r[0], r[1])
 
@@ -215,27 +216,30 @@ forLoop2:
 			unixTimestamp, _ := utils.HexToUnix(block.Timestamp)
 
 			event := get.DecodeTransferLog(eventHash, topics, data)
+			value, _ := utils.HexToDecimalString(event.Value)
 			transferHistory = append(transferHistory, TransferHistory{TxHash: txHash, From: event.From,
-				To: event.To, Value: event.Value, Timestamp: unixTimestamp})
+				To: event.To, Value: value, ValueHex: event.Value, Timestamp: unixTimestamp})
 			t.Logf("Transfer Info: from: %s, to: %s, value: %s\n", event.From, event.To, event.Value)
 
 			count++
 			t.Log("Event Count: ", count)
 		}
+
+		if count >= targetCount {
+
+			result := Result{Account: account, TokenAddress: tokenAddress, Balance: balance, BalanceHex: balanceHex,
+				TransferHistory: transferHistory}
+			fileName := tokenAddress + ".json"
+			folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
+			filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
+			if err := utils.CreateFolderAndFile(folderPath, fileName); err != nil {
+				t.Error(err)
+			}
+			if err := utils.SaveJSONToFile(result, filePath); err != nil {
+				t.Error(err)
+			}
+		}
+
 		time.Sleep(2 * time.Second)
-	}
-
-	if count >= targetCount {
-
-		result := Result{Account: account, TokenAddress: tokenAddress, Balance: balance, TransferHistory: transferHistory}
-		fileName := tokenAddress + ".json"
-		folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
-		filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
-		if err := utils.CreateFolderAndFile(folderPath, fileName); err != nil {
-			t.Error(err)
-		}
-		if err := utils.SaveJSONToFile(result, filePath); err != nil {
-			t.Error(err)
-		}
 	}
 }

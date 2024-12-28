@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"token-tracker/logger"
-	"token-tracker/types/request"
+	"github.com/kyle-park-io/token-tracker/logger"
+	"github.com/kyle-park-io/token-tracker/types/request"
 )
 
 type EventLogsQuery struct {
