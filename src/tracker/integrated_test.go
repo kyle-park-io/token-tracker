@@ -11,6 +11,7 @@ import (
 	"token-tracker/logger"
 	"token-tracker/utils"
 
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -19,7 +20,7 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 
 	configs.SetEnv()
 
-	filePath := "/home/kyle/code/token-tracker/src/json/blockTimestamp/blockTimestamp.json"
+	filePath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp/blockTimestamp.json"
 	b, err := readJSONFile(filePath)
 	if err != nil {
 		t.Error(err)
@@ -114,7 +115,7 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 				return true
 			})
 
-			timeFilePath := "/home/kyle/code/token-tracker/src/json/blockTimestamp/blockTimestamp-temp.json"
+			timeFilePath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp/blockTimestamp-temp.json"
 			err = utils.EnsureFileExists(timeFilePath)
 			if err != nil {
 				t.Error("Error checking file: ", err)
@@ -140,7 +141,7 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 				return true
 			})
 
-			timeFilePath := "/home/kyle/code/token-tracker/src/json/blockTimestamp/blockTimestamp.json"
+			timeFilePath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp/blockTimestamp.json"
 			err = utils.EnsureFileExists(timeFilePath)
 			if err != nil {
 				t.Error("Error checking file: ", err)

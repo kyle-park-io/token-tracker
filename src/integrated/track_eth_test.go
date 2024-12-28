@@ -10,6 +10,8 @@ import (
 	"token-tracker/get"
 	"token-tracker/types/response"
 	"token-tracker/utils"
+
+	"github.com/spf13/viper"
 )
 
 // go test -v -run TestTrackETH
@@ -101,8 +103,8 @@ func TestTrackETH(t *testing.T) {
 
 			result := Result{Account: account, TokenAddress: tokenAddress, Balance: balance, TransferHistory: transferHistory}
 			fileName := tokenAddress + ".json"
-			folderPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/transferHistory/%s", account)
-			filePath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/transferHistory/%s/%s", account, fileName)
+			folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
+			filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
 			if err := utils.CreateFolderAndFile(folderPath, fileName); err != nil {
 				t.Error(err)
 			}
@@ -140,8 +142,8 @@ func TestTrackETH(t *testing.T) {
 
 			result := Result{Account: account, TokenAddress: tokenAddress, Balance: balance, TransferHistory: transferHistory}
 			fileName := tokenAddress + ".json"
-			folderPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/transferHistory/%s", account)
-			filePath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/transferHistory/%s/%s", account, fileName)
+			folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
+			filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
 			if err := utils.CreateFolderAndFile(folderPath, fileName); err != nil {
 				t.Error(err)
 			}

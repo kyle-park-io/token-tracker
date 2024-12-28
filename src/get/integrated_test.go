@@ -7,6 +7,8 @@ import (
 	"token-tracker/configs"
 	"token-tracker/types/response"
 	"token-tracker/utils"
+
+	"github.com/spf13/viper"
 )
 
 // go test -v -run TestRetrieveFullBlockchainData
@@ -68,28 +70,28 @@ forLoop:
 		t.Error(err)
 	}
 
-	folderPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/fullData/%s", randomBlockNumber)
+	folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/fullData/%s", randomBlockNumber)
 	if err := utils.CreateFolder(folderPath); err != nil {
 		t.Error(err)
 	}
 
 	blockName := "block.json"
-	blockPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/fullData/%s/%s", randomBlockNumber, blockName)
+	blockPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/fullData/%s/%s", randomBlockNumber, blockName)
 	if err := utils.SaveJSONToFile(block, blockPath); err != nil {
 		t.Error(err)
 	}
 	txName := "transaction.json"
-	txPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/fullData/%s/%s", randomBlockNumber, txName)
+	txPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/fullData/%s/%s", randomBlockNumber, txName)
 	if err := utils.SaveJSONToFile(tx, txPath); err != nil {
 		t.Error(err)
 	}
 	receiptName := "transactionReceipt.json"
-	receiptPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/fullData/%s/%s", randomBlockNumber, receiptName)
+	receiptPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/fullData/%s/%s", randomBlockNumber, receiptName)
 	if err := utils.SaveJSONToFile(txReceipt, receiptPath); err != nil {
 		t.Error(err)
 	}
 	logsName := "eventLogs.json"
-	logsPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/fullData/%s/%s", randomBlockNumber, logsName)
+	logsPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/fullData/%s/%s", randomBlockNumber, logsName)
 	if err := utils.SaveJSONToFile(eventLogs, logsPath); err != nil {
 		t.Error(err)
 	}

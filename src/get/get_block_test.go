@@ -6,6 +6,8 @@ import (
 
 	"token-tracker/configs"
 	"token-tracker/utils"
+
+	"github.com/spf13/viper"
 )
 
 // go test -v -run TestGetBlockNumber
@@ -42,7 +44,7 @@ func TestGetBlockWithoutTxsByNumber(t *testing.T) {
 		t.Error(err)
 	}
 
-	filePath := "/home/kyle/code/token-tracker/src/json/block.json"
+	filePath := viper.GetString("ROOT_PATH") + "/json/test/block/block.json"
 	if err := utils.SaveJSONToFile(block, filePath); err != nil {
 		t.Error(err)
 	}
@@ -66,7 +68,7 @@ func TestGetBlockWithTxsByNumber(t *testing.T) {
 		t.Error(err)
 	}
 
-	filePath := "/home/kyle/code/token-tracker/src/json/block.json"
+	filePath := viper.GetString("ROOT_PATH") + "/json/test/block/block.json"
 	if err := utils.SaveJSONToFile(block, filePath); err != nil {
 		t.Error(err)
 	}
@@ -90,8 +92,8 @@ func TestGetBlockByNumber(t *testing.T) {
 	}
 
 	fileName := "block.json"
-	folderPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/blocks/%s", blockNumber)
-	filePath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/blocks/%s/%s", blockNumber, fileName)
+	folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/blocks/%s", blockNumber)
+	filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/blocks/%s/%s", blockNumber, fileName)
 	if err := utils.CreateFolderAndFile(folderPath, fileName); err != nil {
 		t.Error(err)
 	}

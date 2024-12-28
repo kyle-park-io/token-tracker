@@ -5,6 +5,8 @@ import (
 
 	"token-tracker/configs"
 	"token-tracker/utils"
+
+	"github.com/spf13/viper"
 )
 
 // go test -v -run TestGetLogs
@@ -20,7 +22,7 @@ func TestGetLogs(t *testing.T) {
 		t.Error(err)
 	}
 
-	filePath := "/home/kyle/code/token-tracker/src/json/eventLogs/eventLogs.json"
+	filePath := viper.GetString("ROOT_PATH") + "/json/test/eventLogs/eventLogs.json"
 	if err := utils.SaveJSONToFile(eventLogs, filePath); err != nil {
 		t.Error(err)
 	}

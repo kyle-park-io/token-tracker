@@ -1,6 +1,6 @@
 module token-tracker
 
-go 1.23.4
+go 1.23
 
 require (
 	github.com/spf13/viper v1.19.0

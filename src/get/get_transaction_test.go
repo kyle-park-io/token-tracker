@@ -6,6 +6,8 @@ import (
 
 	"token-tracker/configs"
 	"token-tracker/utils"
+
+	"github.com/spf13/viper"
 )
 
 // go test -v -run TestGetTransactionByHash
@@ -20,8 +22,8 @@ func TestGetTransactionByHash(t *testing.T) {
 	}
 
 	fileName := "transaction.json"
-	folderPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/transactions/%s", txHash)
-	filePath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/transactions/%s/%s", txHash, fileName)
+	folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transactions/%s", txHash)
+	filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transactions/%s/%s", txHash, fileName)
 	if err := utils.CreateFolderAndFile(folderPath, fileName); err != nil {
 		t.Error(err)
 	}
@@ -44,8 +46,8 @@ func TestGetTransactionReceiptByHash(t *testing.T) {
 	}
 
 	fileName := "transactionReceipt.json"
-	folderPath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/transactions/%s", txHash)
-	filePath := fmt.Sprintf("/home/kyle/code/token-tracker/src/json/transactions/%s/%s", txHash, fileName)
+	folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transactions/%s", txHash)
+	filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transactions/%s/%s", txHash, fileName)
 	if err := utils.CreateFolderAndFile(folderPath, fileName); err != nil {
 		t.Error(err)
 	}

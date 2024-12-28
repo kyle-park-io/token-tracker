@@ -9,7 +9,7 @@ import (
 // go test -v -run TestFileExists
 func TestFileExists(t *testing.T) {
 
-	filePath := "/home/kyle/code/token-tracker/src/json/block.json"
+	filePath := "/home/kyle/code/token-tracker/src/json/test/block/block.json"
 	exists, err := FileExists(filePath)
 	if err != nil {
 		t.Error(err)
@@ -27,7 +27,7 @@ func TestEnsureFileExists(t *testing.T) {
 
 	configs.SetEnv()
 
-	filePath := "/home/kyle/code/token-tracker/src/json/block.json"
+	filePath := "/home/kyle/code/token-tracker/src/json/test/block/block.json"
 	err := EnsureFileExists(filePath)
 	if err != nil {
 		t.Error(err)

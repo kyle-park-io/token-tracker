@@ -8,6 +8,7 @@ import (
 	"token-tracker/logger"
 	"token-tracker/utils"
 
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -67,7 +68,7 @@ forLoop:
 		}
 	}
 
-	timeFilePath := "/home/kyle/code/token-tracker/src/json/blockTimestamp/blockTimestamp-example.json"
+	timeFilePath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp/blockTimestamp-example.json"
 	err = utils.EnsureFileExists(timeFilePath)
 	if err != nil {
 		t.Error("Error checking file: ", err)
