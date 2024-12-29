@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func readJSONFile(filePath string) ([]BlockTimestamp, error) {
+func ReadBlockTimestampJSONFile(filePath string) ([]BlockTimestamp, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func readJSONFile(filePath string) ([]BlockTimestamp, error) {
 	return b, nil
 }
 
-func mapTimestampByNumber(blockTimestamps []BlockTimestamp) map[string]Timestamp {
+func MapTimestampByNumber(blockTimestamps []BlockTimestamp) map[string]Timestamp {
 	timestampMap := make(map[string]Timestamp)
 	for _, blockTimestamp := range blockTimestamps {
 		timestampMap[blockTimestamp.Number] = blockTimestamp.Timestamp
@@ -28,7 +28,7 @@ func mapTimestampByNumber(blockTimestamps []BlockTimestamp) map[string]Timestamp
 	return timestampMap
 }
 
-func mapHexTimestampByNumber(blockTimestamps []BlockTimestamp) map[string]string {
+func MapHexTimestampByNumber(blockTimestamps []BlockTimestamp) map[string]string {
 	timestampMap := make(map[string]string)
 	for _, blockTimestamp := range blockTimestamps {
 		timestampMap[blockTimestamp.Number] = blockTimestamp.Timestamp.Hex
@@ -36,7 +36,7 @@ func mapHexTimestampByNumber(blockTimestamps []BlockTimestamp) map[string]string
 	return timestampMap
 }
 
-func mapStructByNumber(blockTimestamps []BlockTimestamp) map[string]struct{} {
+func MapStructByNumber(blockTimestamps []BlockTimestamp) map[string]struct{} {
 	structMap := make(map[string]struct{})
 	for _, blockTimestamp := range blockTimestamps {
 		structMap[blockTimestamp.Number] = struct{}{}

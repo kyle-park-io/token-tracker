@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 
+	"github.com/kyle-park-io/token-tracker/executor"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/router"
 	"github.com/spf13/viper"
@@ -44,4 +45,6 @@ func StartBlockTimestampServer() {
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
 
-func StartBlockTimestampServer2() {}
+func StartBlockTimestampServer2() {
+	executor.EnhancedBlockTimestampRecorder()
+}

@@ -2,10 +2,10 @@ package tracker
 
 import "testing"
 
-// go test -v -run TestReadJSONFile
-func TestReadJSONFile(t *testing.T) {
+// go test -v -run TestReadBlockTimestampJSONFile
+func TestReadBlockTimestampJSONFile(t *testing.T) {
 	filePath := "/home/kyle/code/token-tracker/src/json/blockTimestamp/blockTimestamp.json"
-	b, err := readJSONFile(filePath)
+	b, err := ReadBlockTimestampJSONFile(filePath)
 	if err != nil {
 		t.Error(err)
 	}
@@ -16,11 +16,11 @@ func TestReadJSONFile(t *testing.T) {
 // go test -v -run TestMapTimestampByNumber
 func TestMapTimestampByNumber(t *testing.T) {
 	filePath := "/home/kyle/code/token-tracker/src/json/blockTimestamp/blockTimestamp.json"
-	b, err := readJSONFile(filePath)
+	b, err := ReadBlockTimestampJSONFile(filePath)
 	if err != nil {
 		t.Error(err)
 	}
 
-	timestampMap := mapTimestampByNumber(b)
+	timestampMap := MapTimestampByNumber(b)
 	t.Logf("Timestamps:\n %+v", timestampMap)
 }

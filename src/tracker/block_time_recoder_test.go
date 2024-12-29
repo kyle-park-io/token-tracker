@@ -64,7 +64,7 @@ forLoop:
 
 		case e := <-errChan:
 			_ = e
-			logger.Log.Warn("Too many requests to Infura", zap.Int("status_code", 429))
+			logger.Log.Warnln("Too many requests to Infura", zap.Int("status_code", 429))
 		}
 	}
 

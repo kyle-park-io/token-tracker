@@ -1,35 +1,44 @@
-package tracker
+package executor
 
 import (
 	"context"
+	"math"
 	"sync"
-	"testing"
 	"time"
 
 	"github.com/kyle-park-io/token-tracker/get"
-	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/logger"
+	"github.com/kyle-park-io/token-tracker/tracker"
 	"github.com/kyle-park-io/token-tracker/utils"
 
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
-// go test -v -timeout 30m -run TestEnhancedBlockTimestampRecorder
-func TestEnhancedBlockTimestampRecorder(t *testing.T) {
+func EnhancedBlockTimestampRecorder() {
 
-	config.SetDevEnv()
+	fileName := "blockTimestamp.json"
+	folderPath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp"
+	filePath := folderPath + "/" + fileName
 
-	filePath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp/blockTimestamp.json"
-	b, err := ReadBlockTimestampJSONFile(filePath)
+	err := utils.CreateFolder(folderPath)
 	if err != nil {
-		t.Error(err)
+		logger.Log.Warnln(err)
+	}
+	err = utils.EnsureFileExists(filePath)
+	if err != nil {
+		logger.Log.Warnln(err)
 	}
 
-	timestampMap := MapTimestampByNumber(b)
-	hexMap := MapHexTimestampByNumber(b)
-	structMap := MapStructByNumber(b)
-	t.Logf("Timestamps:\n %+v", timestampMap)
+	b, err := tracker.ReadBlockTimestampJSONFile(filePath)
+	if err != nil {
+		logger.Log.Errorln(err)
+	}
+
+	timestampMap := tracker.MapTimestampByNumber(b)
+	hexMap := tracker.MapHexTimestampByNumber(b)
+	structMap := tracker.MapStructByNumber(b)
+	logger.Log.Infof("Timestamps:\n %+v", timestampMap)
 
 	// Separate variables for full file saving and partial file saving to handle different scenarios.
 	var BlockTimestampMap sync.Map
@@ -39,10 +48,9 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 		BlockTimestampMap2.Store(k, v)
 	}
 
-	// currentBlockNumber := "0x14"
 	currentBlockNumber, err := get.GetBlockNumber()
 	if err != nil {
-		t.Error(err)
+		logger.Log.Errorln(err)
 	}
 
 	// number of goroutine
@@ -50,14 +58,14 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 	numRecords := 30
 	// channel
 	isBlockWithDataChans := make([]chan map[string]struct{}, nog)
-	blockTimestampMapChan := make(chan Task)
+	blockTimestampMapChan := make(chan tracker.Task)
 	errChan := make(chan error, nog)
 
 	for i := 0; i < nog; i++ {
 		isBlockWithDataChans[i] = make(chan map[string]struct{}, numRecords)
 
 		// Launch a goroutine to collect timestamps.
-		go EnhancedBlockTimestampRecorder(i, string(currentBlockNumber), numRecords,
+		go tracker.EnhancedBlockTimestampRecorder(i, string(currentBlockNumber), numRecords,
 			isBlockWithDataChans[i],
 			blockTimestampMapChan, errChan)
 
@@ -67,10 +75,12 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 		}()
 	}
 
-	totalTime := 180
-	intervalTime := 120
+	// totalTime := 180
+	totalTime := math.MaxInt64
+	intervalTime := 300
 	// Declare ctx (context) and ticker.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(totalTime)*time.Minute)
+	// ctx, cancel := context.WithTimeout(context.Background(), time.Duration(totalTime)*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(totalTime))
 	defer cancel()
 	ticker := time.NewTicker(time.Duration(intervalTime) * time.Second)
 	defer ticker.Stop()
@@ -103,40 +113,45 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 		case <-ticker.C:
 			logger.Log.Infof("Ticker ticked: %d seconds passed\n", intervalTime)
 
-			saved := make([]BlockTimestamp, 0)
+			saved := make([]tracker.BlockTimestamp, 0)
 			BlockTimestampMap2.Range(func(key, value interface{}) bool {
 				logger.Log.Infof("Block: %v, Timestamp: %v\n", key, value)
 
 				keyStr, _ := key.(string)
 				valueStr, _ := value.(string)
-				timestamp, _ := ConvertBlockTimestamp(valueStr)
-				saved = append(saved, BlockTimestamp{Number: keyStr, Timestamp: timestamp})
+				timestamp, _ := tracker.ConvertBlockTimestamp(valueStr)
+				saved = append(saved, tracker.BlockTimestamp{Number: keyStr, Timestamp: timestamp})
 
 				return true
 			})
 
 			timeFilePath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp/blockTimestamp-temp.json"
+			timeFilePath2 := viper.GetString("ROOT_PATH") + "/json/blockTimestamp/blockTimestamp.json"
 			err = utils.EnsureFileExists(timeFilePath)
 			if err != nil {
-				t.Error("Error checking file: ", err)
+				logger.Log.Errorln("Error checking file: ", err)
 			}
 			// TODO: Compare unbuffered and buffered storage methods when data accumulates.
 			err = utils.SaveJSONToFile(saved, timeFilePath)
 			if err != nil {
-				t.Error(err)
+				logger.Log.Errorln(err)
+			}
+			err = utils.SaveJSONToFile(saved, timeFilePath2)
+			if err != nil {
+				logger.Log.Errorln(err)
 			}
 
 		case <-ctx.Done():
 			logger.Log.Info("Context timeout:", ctx.Err())
 
-			saved := make([]BlockTimestamp, 0)
+			saved := make([]tracker.BlockTimestamp, 0)
 			BlockTimestampMap.Range(func(key, value interface{}) bool {
 				logger.Log.Infof("Block: %v, Timestamp: %v\n", key, value)
 
 				keyStr, _ := key.(string)
 				valueStr, _ := value.(string)
-				timestamp, _ := ConvertBlockTimestamp(valueStr)
-				saved = append(saved, BlockTimestamp{Number: keyStr, Timestamp: timestamp})
+				timestamp, _ := tracker.ConvertBlockTimestamp(valueStr)
+				saved = append(saved, tracker.BlockTimestamp{Number: keyStr, Timestamp: timestamp})
 
 				return true
 			})
@@ -144,18 +159,17 @@ func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 			timeFilePath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp/blockTimestamp.json"
 			err = utils.EnsureFileExists(timeFilePath)
 			if err != nil {
-				t.Error("Error checking file: ", err)
+				logger.Log.Errorln("Error checking file: ", err)
 			}
 			// TODO: Compare unbuffered and buffered storage methods when data accumulates.
 			err = utils.SaveJSONToFile(saved, timeFilePath)
 			if err != nil {
-				t.Error(err)
+				logger.Log.Errorln(err)
 			}
 
-			t.Log("Total count: ", count)
-			t.Log("EnhancedBlockTimestampRecorder execution completed.")
+			logger.Log.Infoln("Total count: ", count)
+			logger.Log.Infoln("EnhancedBlockTimestampRecorder execution completed.")
 			return
 		}
 	}
-	// time.Sleep(time.Duration(math.MaxInt64))	// time.Sleep(100 * time.Second)
 }

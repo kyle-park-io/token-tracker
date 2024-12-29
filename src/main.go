@@ -21,7 +21,7 @@ func main() {
 		os.Setenv("ROOT_PATH", "/home/kyle/code/token-tracker/src")
 		viper.Set("ROOT_PATH", "/home/kyle/code/token-tracker/src")
 
-		os.Setenv("CONFIG_PATH", "/home/kyle/code/token-tracker/configs/config.yaml")
+		os.Setenv("CONFIG_PATH", "/home/kyle/code/token-tracker/src/configs/config.yaml")
 		if err := config.InitConfig(); err != nil {
 			logger.Log.Fatalf("Check Errors, %v", err)
 		}
