@@ -3,8 +3,8 @@ package integrated
 import (
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
 	"github.com/kyle-park-io/token-tracker/get"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/tracker"
 	"github.com/kyle-park-io/token-tracker/utils"
 )
@@ -13,7 +13,7 @@ import (
 func TestFindBlockByTimestamp(t *testing.T) {
 
 	// Initialize configuration environment
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	// Test input values
 	yearMonthDay := "2024-12-24"

@@ -1,4 +1,4 @@
-package configs
+package config
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func SetEnv() {
+func SetDevEnv() {
 	logger.InitLogger()
 	logger.Log.Info("Hi! i'm token tracker.")
 

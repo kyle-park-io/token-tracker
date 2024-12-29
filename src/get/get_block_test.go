@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/utils"
 
 	"github.com/spf13/viper"
@@ -13,7 +13,7 @@ import (
 // go test -v -run TestGetBlockNumber
 func TestGetBlockNumber(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	blockNumber, err := GetBlockNumber()
 	if err != nil {
@@ -31,7 +31,7 @@ func TestGetBlockNumber(t *testing.T) {
 // go test -v -run TestGetBlockWithoutTxsByNumber
 func TestGetBlockWithoutTxsByNumber(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	blockNumber, err := GetBlockNumber()
 	if err != nil {
@@ -55,7 +55,7 @@ func TestGetBlockWithoutTxsByNumber(t *testing.T) {
 // go test -v -run TestGetBlockWithTxsByNumber
 func TestGetBlockWithTxsByNumber(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	blockNumber, err := GetBlockNumber()
 	if err != nil {
@@ -79,7 +79,7 @@ func TestGetBlockWithTxsByNumber(t *testing.T) {
 // go test -v -run TestGetBlockByNumber
 func TestGetBlockByNumber(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	bn := int64(21491650)
 	blockNumber := utils.DecimalToHex(bn)
@@ -107,7 +107,7 @@ func TestGetBlockByNumber(t *testing.T) {
 // go test -v -run TestGetBlockTimestampByNumber
 func TestGetBlockTimestampByNumber(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	blockNumber, err := GetBlockNumber()
 	if err != nil {

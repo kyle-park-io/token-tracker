@@ -3,8 +3,8 @@ package get
 import (
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
 	"github.com/kyle-park-io/token-tracker/get/call"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 )
 
 // go test -v -run TestDecodeTransferLog
@@ -37,7 +37,7 @@ func TestDecodeTransferLog(t *testing.T) {
 // go test -v -run TestDecodeRealTransferLog
 func TestDecodeRealTransferLog(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	// Wrapped Ether Address
 	address := "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"

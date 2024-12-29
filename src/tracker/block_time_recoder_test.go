@@ -3,8 +3,8 @@ package tracker
 import (
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
 	"github.com/kyle-park-io/token-tracker/get"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/utils"
 
@@ -15,7 +15,7 @@ import (
 // go test -v -run TestRecordBlockTimestamp
 func TestRecordBlockTimestamp(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	currentBlockNumber, err := get.GetBlockNumber()
 	if err != nil {
@@ -82,7 +82,7 @@ forLoop:
 // go test -v -run TestConvertBlockTimestamp
 func TestConvertBlockTimestamp(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	blockNumber, err := get.GetBlockNumber()
 	if err != nil {

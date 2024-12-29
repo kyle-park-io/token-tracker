@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
 	"github.com/kyle-park-io/token-tracker/get"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/types/response"
 	"github.com/kyle-park-io/token-tracker/utils"
 
@@ -18,7 +18,7 @@ import (
 func TestTrackETH(t *testing.T) {
 
 	// Initialize configuration environment
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	// Test input values
 	// Wrapped Ether Address

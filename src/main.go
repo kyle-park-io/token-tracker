@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/server"
 
@@ -15,12 +15,24 @@ func main() {
 	logger.InitLogger()
 	logger.Log.Info("Hi! i'm token tracker.")
 
-	os.Setenv("ROOT_PATH", "/home/kyle/code/token-tracker/src")
-	viper.Set("ROOT_PATH", "/home/kyle/code/token-tracker/src")
+	env := "dev"
+	switch env {
+	case "dev":
+		os.Setenv("ROOT_PATH", "/home/kyle/code/token-tracker/src")
+		viper.Set("ROOT_PATH", "/home/kyle/code/token-tracker/src")
 
-	os.Setenv("CONFIG_PATH", "/home/kyle/code/token-tracker/src/configs/config.yaml")
-	if err := configs.InitConfig(); err != nil {
-		logger.Log.Fatalf("Check Errors, %v", err)
+		os.Setenv("CONFIG_PATH", "/home/kyle/code/token-tracker/configs/config.yaml")
+		if err := config.InitConfig(); err != nil {
+			logger.Log.Fatalf("Check Errors, %v", err)
+		}
+	case "prod":
+		os.Setenv("ROOT_PATH", "/app")
+		viper.Set("ROOT_PATH", "/app")
+
+		os.Setenv("CONFIG_PATH", "/app/configs/config.yaml")
+		if err := config.InitConfig(); err != nil {
+			logger.Log.Fatalf("Check Errors, %v", err)
+		}
 	}
 
 	// Create the root command
@@ -35,7 +47,8 @@ func main() {
 		Use:   "block-timestamp",
 		Short: "Start the server for collecting block timestamps",
 		Run: func(cmd *cobra.Command, args []string) {
-			server.StartBlockTimestampServer()
+			// server.StartBlockTimestampServer()
+			server.StartBlockTimestampServer2()
 		},
 	}
 

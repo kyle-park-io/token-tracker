@@ -3,14 +3,14 @@ package get
 import (
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/utils"
 )
 
 // go test -v -run TestGetBalance
 func TestGetBalance(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	var tag string
 	// tag = "latest"

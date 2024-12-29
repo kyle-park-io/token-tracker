@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyle-park-io/token-tracker/configs"
 	"github.com/kyle-park-io/token-tracker/get"
 	"github.com/kyle-park-io/token-tracker/get/call"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/types/response"
 	"github.com/kyle-park-io/token-tracker/utils"
 	"github.com/spf13/viper"
@@ -19,7 +19,7 @@ import (
 func TestTrackERC20(t *testing.T) {
 
 	// Initialize configuration environment
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	// Test input values
 	account := "0x1E2aB9200B2Fe8832A55CACCB917872dB2715C31"

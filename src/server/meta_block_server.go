@@ -5,6 +5,7 @@ import (
 
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/router"
+	"github.com/spf13/viper"
 
 	docs "github.com/kyle-park-io/token-tracker/docs/transfertracker"
 	swaggerfiles "github.com/swaggo/files"
@@ -27,9 +28,9 @@ func StartBlockTimestampServer() {
 		})
 	})
 
-	docs.SwaggerInfo.BasePath = "/api/v1"
+	docs.SwaggerInfo.BasePath = viper.GetString("server.api_prefix")
 	// Group for API versioning
-	v1 := r.Group("/api/v1")
+	v1 := r.Group(viper.GetString("server.api_prefix"))
 	{
 		eg := v1.Group("/example")
 		{
@@ -42,3 +43,5 @@ func StartBlockTimestampServer() {
 	logger.Log.Infoln("Starting web server on :8080")
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
+
+func StartBlockTimestampServer2() {}

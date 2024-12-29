@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 )
 
 // go test -v -run TestFileExists
@@ -25,7 +25,7 @@ func TestFileExists(t *testing.T) {
 // go test -v -run TestEnsureFileExists
 func TestEnsureFileExists(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	filePath := "/home/kyle/code/token-tracker/src/json/test/block/block.json"
 	err := EnsureFileExists(filePath)

@@ -3,7 +3,7 @@ package get
 import (
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/utils"
 
 	"github.com/spf13/viper"
@@ -12,7 +12,7 @@ import (
 // go test -v -run TestGetLogs
 func TestGetLogs(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	// Tether USD Contract Address
 	address := "0xdAC17F958D2ee523a2206206994597C13D831ec7"

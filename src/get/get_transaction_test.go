@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/utils"
 
 	"github.com/spf13/viper"
@@ -13,7 +13,7 @@ import (
 // go test -v -run TestGetTransactionByHash
 func TestGetTransactionByHash(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	txHash := "0x797064084c35761950503758847f0655791880eab1df8d2983784dc20fc32391"
 	transaction, err := GetTransactionByHash(txHash)
@@ -37,7 +37,7 @@ func TestGetTransactionByHash(t *testing.T) {
 // go test -v -run TestGetTransactionReceiptByHash
 func TestGetTransactionReceiptByHash(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	txHash := "0x797064084c35761950503758847f0655791880eab1df8d2983784dc20fc32391"
 	txReceipt, err := GetTransactionReceiptByHash(txHash)

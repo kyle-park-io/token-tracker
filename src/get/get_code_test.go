@@ -3,13 +3,13 @@ package get
 import (
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 )
 
 // go test -v -run TestGetCodeForEOA
 func TestGetCodeForEOA(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	// Kyle Test Address
 	address := "0xF50fe83f158c4D330759694b9fC03D3C39779926"
@@ -28,7 +28,7 @@ func TestGetCodeForEOA(t *testing.T) {
 // go test -v -run TestGetCodeForContract
 func TestGetCodeForContract(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	// Tether USD Contract Address
 	address := "0xdAC17F958D2ee523a2206206994597C13D831ec7"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kyle-park-io/token-tracker/configs"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/types/response"
 	"github.com/kyle-park-io/token-tracker/utils"
 
@@ -14,7 +14,7 @@ import (
 // go test -v -run TestRetrieveFullBlockchainData
 func TestRetrieveFullBlockchainData(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	randomBlockNumber, err := GetRandomBlockNumber()
 	if err != nil {

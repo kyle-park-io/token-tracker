@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyle-park-io/token-tracker/configs"
 	"github.com/kyle-park-io/token-tracker/get"
+	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/utils"
 
@@ -18,7 +18,7 @@ import (
 // go test -v -timeout 30m -run TestEnhancedBlockTimestampRecorder
 func TestEnhancedBlockTimestampRecorder(t *testing.T) {
 
-	configs.SetEnv()
+	config.SetDevEnv()
 
 	filePath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp/blockTimestamp.json"
 	b, err := readJSONFile(filePath)
