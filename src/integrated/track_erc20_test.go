@@ -12,6 +12,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/types/response"
 	"github.com/kyle-park-io/token-tracker/utils"
+
 	"github.com/spf13/viper"
 )
 

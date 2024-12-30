@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket Logs</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      #logs {
+        width: 100%;
+        height: 90vh;
+        overflow-y: scroll;
+        border: 1px solid #ccc;
+        padding: 10px;
+        background: #f9f9f9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Token-Tracker Logs</h1>
+    <div id="logs"></div>
+
+    <script>
+      // Establish WebSocket connection
+      const socket = new WebSocket('wss://' + location.host + '/tracker/ws');
+      const logsDiv = document.getElementById('logs');
+
+      // Handle incoming messages
+      socket.onmessage = (event) => {
+        const log = document.createElement('div');
+        log.textContent = event.data;
+        logsDiv.appendChild(log);
+        logsDiv.scrollTop = logsDiv.scrollHeight; // Auto-scroll to bottom
+      };
+
+      socket.onopen = () => {
+        console.log('Connected to WebSocket');
+      };
+
+      socket.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
+
+      socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+    </script>
+  </body>
+</html>

@@ -1,17 +1,19 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
+	docs "github.com/kyle-park-io/token-tracker/docs/transfertracker"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/router"
-	"github.com/spf13/viper"
+	"github.com/kyle-park-io/token-tracker/ws"
 
-	docs "github.com/kyle-park-io/token-tracker/docs/transfertracker"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 // @title Blockchain Transfer Tracker API
@@ -22,15 +24,36 @@ import (
 func StartTransferTrackerServer() {
 	r := gin.Default()
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hi! i'm token tracker.",
-		})
-	})
+	env := viper.GetString("ENV")
+	if env == "" {
+		logger.Log.Errorln("check env config")
+	}
+	root_path := viper.GetString("ROOT_PATH")
+	url_prefix := viper.GetString(fmt.Sprintf("server.tracker.%s.url_prefix", env))
+	api_url_prefix := viper.GetString(fmt.Sprintf("server.tracker.%s.api_url_prefix", env))
 
-	docs.SwaggerInfo.BasePath = viper.GetString("server.api_prefix")
+	// Group for Base URL
+	base := r.Group(url_prefix)
+	{
+		base.GET("/", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Hi! i'm token tracker.",
+			})
+		})
+
+		logs := base.Group("logs")
+		{
+			logs.GET("/tracker", func(c *gin.Context) {
+				c.HTML(http.StatusOK, "logs_tracker.html", nil) // Render logs HTML
+			})
+		}
+
+		base.GET("/ws", ws.HandleWebSocket)
+	}
+
+	docs.SwaggerInfo.BasePath = api_url_prefix
 	// Group for API versioning
-	v1 := r.Group(viper.GetString("server.api_prefix"))
+	v1 := r.Group(api_url_prefix)
 	{
 		get := v1.Group("/get")
 		{
@@ -61,8 +84,14 @@ func StartTransferTrackerServer() {
 		}
 	}
 
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	switch env {
+	case "dev":
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	case "prod":
+		r.GET("/tracker/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	}
 
-	logger.Log.Infoln("Starting alternative server on :9090")
+	r.LoadHTMLGlob(fmt.Sprintf("%s/html/%s/*.html", root_path, env))
+	logger.Log.Infoln("Starting transfer-tracker server on :9090")
 	r.Run(":9090") // listen and serve on 0.0.0.0:9090
 }

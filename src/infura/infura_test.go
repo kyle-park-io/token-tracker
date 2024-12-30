@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/kyle-park-io/token-tracker/internal/config"
+
 	"github.com/spf13/viper"
 )
 

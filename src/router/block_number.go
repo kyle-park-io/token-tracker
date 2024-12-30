@@ -6,6 +6,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/get"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/ws"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,6 +36,7 @@ func GetLatestBlockNumber(c *gin.Context) {
 	if err != nil {
 		logger.Log.Warnln(err)
 	}
+	ws.GlobalLogChannel <- "This is a log message!"
 
 	c.JSON(http.StatusOK,
 		ResponseBlockNumber{BlockNumber: blockNumber, HexBlockNumber: string(hexBlokNumber)})

@@ -16,6 +16,7 @@ func main() {
 	logger.Log.Info("Hi! i'm token tracker.")
 
 	env := "dev"
+	viper.Set("ENV", env)
 	switch env {
 	case "dev":
 		os.Setenv("ROOT_PATH", "/home/kyle/code/token-tracker/src")

@@ -15,9 +15,9 @@ import (
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/types/response"
 	"github.com/kyle-park-io/token-tracker/utils"
-	"github.com/spf13/viper"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 // TrackERC20 godoc
