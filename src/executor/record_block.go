@@ -3,7 +3,6 @@ package executor
 import (
 	"context"
 	"fmt"
-	"math"
 	"sync"
 	"time"
 
@@ -19,7 +18,7 @@ import (
 
 func EnhancedBlockTimestampRecorder() {
 
-	time.Sleep(time.Duration(math.MaxInt64))
+	// time.Sleep(time.Duration(math.MaxInt64))
 
 	fileName := "blockTimestamp.json"
 	folderPath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp"
@@ -146,6 +145,16 @@ func EnhancedBlockTimestampRecorder() {
 				logger.Log.Errorln(err)
 			}
 
+			// pvc
+			logger.Log.Infoln("Save to PVC")
+			if viper.GetString("ENV") == "prod" {
+				timeFilePath3 := viper.GetString("ROOT_PATH") + "/../data/blockTimestamp.json"
+				err = utils.SaveJSONToFile(saved, timeFilePath3)
+				if err != nil {
+					logger.Log.Errorln(err)
+				}
+			}
+
 		case <-ctx.Done():
 			logger.Log.Info("Context timeout:", ctx.Err())
 
@@ -170,6 +179,16 @@ func EnhancedBlockTimestampRecorder() {
 			err = utils.SaveJSONToFile(saved, timeFilePath)
 			if err != nil {
 				logger.Log.Errorln(err)
+			}
+
+			// pvc
+			logger.Log.Infoln("Save to PVC")
+			if viper.GetString("ENV") == "prod" {
+				timeFilePath2 := viper.GetString("ROOT_PATH") + "/../data/blockTimestamp.json"
+				err = utils.SaveJSONToFile(saved, timeFilePath2)
+				if err != nil {
+					logger.Log.Errorln(err)
+				}
 			}
 
 			logger.Log.Infoln("Total count: ", count)
