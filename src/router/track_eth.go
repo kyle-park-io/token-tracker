@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/types/response"
 	"github.com/kyle-park-io/token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/ws"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -144,6 +146,9 @@ func TrackETH(c *gin.Context) {
 			_ = utils.CreateFolderAndFile(folderPath, fileName)
 			_ = utils.SaveJSONToFile(result, filePath)
 
+			jsonData, _ := json.Marshal(result)
+			ws.GlobalLogChannel <- string(jsonData)
+
 			c.JSON(http.StatusOK, result)
 			return
 		}
@@ -158,6 +163,9 @@ func TrackETH(c *gin.Context) {
 			filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
 			_ = utils.CreateFolderAndFile(folderPath, fileName)
 			_ = utils.SaveJSONToFile(result, filePath)
+
+			jsonData, _ := json.Marshal(result)
+			ws.GlobalLogChannel <- string(jsonData)
 
 			c.JSON(http.StatusOK, result)
 			return
@@ -196,6 +204,9 @@ func TrackETH(c *gin.Context) {
 			filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
 			_ = utils.CreateFolderAndFile(folderPath, fileName)
 			_ = utils.SaveJSONToFile(result, filePath)
+
+			jsonData, _ := json.Marshal(result)
+			ws.GlobalLogChannel <- string(jsonData)
 
 			c.JSON(http.StatusOK, result)
 			return

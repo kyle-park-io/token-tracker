@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/get"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/ws"
 
 	"github.com/gin-gonic/gin"
 )
@@ -65,6 +67,10 @@ func GetBlockTimestamp(c *gin.Context) {
 		logger.Log.Warnln(err)
 	}
 
-	c.JSON(http.StatusOK, ResponseBlockTimestamp{Timestamp: timestamp, HexTimestamp: hexTimestamp,
-		Date: date})
+	response := ResponseBlockTimestamp{Timestamp: timestamp, HexTimestamp: hexTimestamp,
+		Date: date}
+	jsonData, _ := json.Marshal(response)
+	ws.GlobalLogChannel <- string(jsonData)
+
+	c.JSON(http.StatusOK, response)
 }

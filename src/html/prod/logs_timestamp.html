@@ -19,12 +19,12 @@
     </style>
   </head>
   <body>
-    <h1>Token-Tracker Logs</h1>
+    <h1>Block-Timestamp Logs</h1>
     <div id="logs"></div>
 
     <script>
       // Establish WebSocket connection
-      const socket = new WebSocket('wss://' + location.host + '/tracker/ws');
+      const socket = new WebSocket('wss://' + location.host + '/recoder/ws');
       const logsDiv = document.getElementById('logs');
 
       // Handle incoming messages

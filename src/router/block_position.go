@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/tracker"
 	"github.com/kyle-park-io/token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/ws"
 
 	"github.com/gin-gonic/gin"
 )
@@ -70,7 +72,11 @@ func GetBlockPosition(c *gin.Context) {
 	timestamp, _ := utils.TimeToUnix(t, "UTC")
 	hexTimestamp := utils.DecimalToHex(timestamp)
 
-	c.JSON(http.StatusOK, ResponseBlockPosition{
+	response := ResponseBlockPosition{
 		BlockTimestamp: ResponseBlockTimestamp{Timestamp: timestamp, HexTimestamp: hexTimestamp, Date: t},
-		BlockPosition:  position})
+		BlockPosition:  position}
+	jsonData, _ := json.Marshal(response)
+	ws.GlobalLogChannel <- string(jsonData)
+
+	c.JSON(http.StatusOK, response)
 }

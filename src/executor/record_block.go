@@ -2,6 +2,7 @@ package executor
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"sync"
 	"time"
@@ -10,12 +11,15 @@ import (
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/tracker"
 	"github.com/kyle-park-io/token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/ws"
 
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
 func EnhancedBlockTimestampRecorder() {
+
+	time.Sleep(time.Duration(math.MaxInt64))
 
 	fileName := "blockTimestamp.json"
 	folderPath := viper.GetString("ROOT_PATH") + "/json/blockTimestamp"
@@ -75,12 +79,12 @@ func EnhancedBlockTimestampRecorder() {
 		}()
 	}
 
-	// totalTime := 180
-	totalTime := math.MaxInt64
+	totalTime := 3 * 60 * 60
+	// totalTime := math.MaxInt64
 	intervalTime := 300
 	// Declare ctx (context) and ticker.
 	// ctx, cancel := context.WithTimeout(context.Background(), time.Duration(totalTime)*time.Minute)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(totalTime))
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(totalTime)*time.Second)
 	defer cancel()
 	ticker := time.NewTicker(time.Duration(intervalTime) * time.Second)
 	defer ticker.Stop()
@@ -107,15 +111,16 @@ func EnhancedBlockTimestampRecorder() {
 			}
 
 		case e := <-errChan:
-			_ = e
 			logger.Log.Warnln("Too many requests to Infura", zap.Int("status_code", 429))
+			ws.GlobalLogChannel <- e.Error()
 
 		case <-ticker.C:
 			logger.Log.Infof("Ticker ticked: %d seconds passed\n", intervalTime)
 
 			saved := make([]tracker.BlockTimestamp, 0)
 			BlockTimestampMap2.Range(func(key, value interface{}) bool {
-				logger.Log.Infof("Block: %v, Timestamp: %v\n", key, value)
+				log := fmt.Sprintf("Block: %v, Timestamp: %v\n", key, value)
+				logger.Log.Infof(log)
 
 				keyStr, _ := key.(string)
 				valueStr, _ := value.(string)

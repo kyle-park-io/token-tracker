@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/kyle-park-io/token-tracker/get"
@@ -36,8 +37,10 @@ func GetLatestBlockNumber(c *gin.Context) {
 	if err != nil {
 		logger.Log.Warnln(err)
 	}
-	ws.GlobalLogChannel <- "This is a log message!"
 
-	c.JSON(http.StatusOK,
-		ResponseBlockNumber{BlockNumber: blockNumber, HexBlockNumber: string(hexBlokNumber)})
+	response := ResponseBlockNumber{BlockNumber: blockNumber, HexBlockNumber: string(hexBlokNumber)}
+	jsonData, _ := json.Marshal(response)
+	ws.GlobalLogChannel <- string(jsonData)
+
+	c.JSON(http.StatusOK, response)
 }

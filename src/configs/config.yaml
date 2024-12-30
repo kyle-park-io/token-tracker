@@ -7,3 +7,21 @@ infura:
   project-id: 'InputYourProjectId'
   https_endpoint: 'https://mainnet.infura.io/v3/InputYourProjectId'
   websocket_endpoint: 'wss://mainnet.infura.io/ws/v3/InputYourProjectId'
+  call_api_maxRetries: 10
+  retry_interval: 1
+
+server:
+  recorder:
+    dev:
+      url_prefix: '/'
+      api_url_prefix: ''
+    prod:
+      url_prefix: '/recoder'
+      api_url_prefix: ''
+  tracker:
+    dev:
+      url_prefix: '/'
+      api_url_prefix: '/api/v1'
+    prod:
+      url_prefix: '/tracker'
+      api_url_prefix: '/api-tracker/v1'

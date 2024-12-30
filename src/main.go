@@ -48,8 +48,7 @@ func main() {
 		Use:   "block-timestamp",
 		Short: "Start the server for collecting block timestamps",
 		Run: func(cmd *cobra.Command, args []string) {
-			// server.StartBlockTimestampServer()
-			server.StartBlockTimestampServer2()
+			server.StartBlockTimestampServer()
 		},
 	}
 

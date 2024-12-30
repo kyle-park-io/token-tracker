@@ -2,9 +2,7 @@ package server
 
 import (
 	"fmt"
-	"math"
 	"net/http"
-	"time"
 
 	"github.com/kyle-park-io/token-tracker/executor"
 	"github.com/kyle-park-io/token-tracker/logger"
@@ -73,17 +71,12 @@ func StartBlockTimestampServer() {
 	case "dev":
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	case "prod":
-		r.GET("/tracker/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+		r.GET("/recorder/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 
 	r.LoadHTMLGlob(fmt.Sprintf("%s/html/%s/*.html", root_path, env))
 	logger.Log.Infoln("Starting block-timestamp server on :8080")
+
+	go executor.EnhancedBlockTimestampRecorder()
 	r.Run() // listen and serve on 0.0.0.0:8080
-}
-
-func StartBlockTimestampServer2() {
-	logger.Log.Infoln("Wait!!")
-	time.Sleep(time.Duration(math.MaxInt64))
-
-	executor.EnhancedBlockTimestampRecorder()
 }

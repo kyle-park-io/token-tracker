@@ -28,6 +28,7 @@ RUN apk add --update --no-cache \
 
 COPY --from=builder /build/app /app/app
 COPY --from=builder /build/configs /app/configs
+COPY --from=builder /build/json /app/json
 COPY --from=builder /build/html /app/html
 
 EXPOSE 8080

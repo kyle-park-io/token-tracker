@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/get"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/ws"
 
 	"github.com/gin-gonic/gin"
 )
@@ -52,22 +54,12 @@ func GetRandomBlock(c *gin.Context) {
 		logger.Log.Warnln(err)
 	}
 
-	// if !withTxs {
-	// 	var block response.BlockWithoutTransactions
-	// 	if err := json.Unmarshal(resp.Result, &block); err != nil {
-	// 		return "", fmt.Errorf("failed to parse Result as Block: %w", err)
-	// 	}
-	// 	return block, nil
-	// } else {
-	// 	var block response.BlockWithTransactions
-	// 	if err := json.Unmarshal(resp.Result, &block); err != nil {
-	// 		return "", fmt.Errorf("failed to parse Result as Block: %w", err)
-	// 	}
-	// 	return block, nil
-	// }
+	response := b
+	jsonData, _ := json.Marshal(response)
+	ws.GlobalLogChannel <- string(jsonData)
 
 	// Send the block data as a JSON response
-	c.JSON(http.StatusOK, b)
+	c.JSON(http.StatusOK, response)
 }
 
 // GetBlock godoc
@@ -128,20 +120,10 @@ func GetBlock(c *gin.Context) {
 		logger.Log.Warnln(err)
 	}
 
-	// if !withTxs {
-	// 	var block response.BlockWithoutTransactions
-	// 	if err := json.Unmarshal(resp.Result, &block); err != nil {
-	// 		return "", fmt.Errorf("failed to parse Result as Block: %w", err)
-	// 	}
-	// 	return block, nil
-	// } else {
-	// 	var block response.BlockWithTransactions
-	// 	if err := json.Unmarshal(resp.Result, &block); err != nil {
-	// 		return "", fmt.Errorf("failed to parse Result as Block: %w", err)
-	// 	}
-	// 	return block, nil
-	// }
+	response := b
+	jsonData, _ := json.Marshal(response)
+	ws.GlobalLogChannel <- string(jsonData)
 
 	// Send the block data as a JSON response
-	c.JSON(http.StatusOK, b)
+	c.JSON(http.StatusOK, response)
 }
