@@ -7,7 +7,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/executor"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/router"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 
 	docs "github.com/kyle-park-io/token-tracker/docs/transfertracker"
 	swaggerfiles "github.com/swaggo/files"
@@ -38,7 +38,7 @@ func StartBlockTimestampServer() {
 	{
 		base.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
-				"message": "Hi! i'm block timestamp recoder.",
+				"message": "Hi! i'm block timestamp recorder.",
 			})
 		})
 		base.GET("/ping", func(c *gin.Context) {
@@ -54,7 +54,8 @@ func StartBlockTimestampServer() {
 			})
 		}
 
-		base.GET("/ws", ws.HandleWebSocket)
+		// base.GET("/ws", ws.HandleWebSocket)
+		base.GET("/ws", wss.HandleWebSocket)
 	}
 
 	docs.SwaggerInfo.BasePath = api_url_prefix

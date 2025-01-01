@@ -10,10 +10,9 @@ import (
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/tracker"
 	"github.com/kyle-park-io/token-tracker/utils"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
 )
 
 func EnhancedBlockTimestampRecorder() {
@@ -110,8 +109,10 @@ func EnhancedBlockTimestampRecorder() {
 			}
 
 		case e := <-errChan:
-			logger.Log.Warnln("Too many requests to Infura", zap.Int("status_code", 429))
-			ws.GlobalLogChannel <- e.Error()
+			// logger.Log.Warnln("Too many requests to Infura", zap.Int("status_code", 429))
+			logger.Log.Warnln(e.Error())
+			// ws.GlobalLogChannel <- e.Error()
+			wss.GlobalLogChannel <- e.Error()
 
 		case <-ticker.C:
 			logger.Log.Infof("Ticker ticked: %d seconds passed\n", intervalTime)

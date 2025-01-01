@@ -10,7 +10,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/get"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/utils"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 
 	"github.com/gin-gonic/gin"
 )
@@ -56,7 +56,8 @@ func GetRandomBlock(c *gin.Context) {
 
 	response := b
 	jsonData, _ := json.Marshal(response)
-	ws.GlobalLogChannel <- string(jsonData)
+	// ws.GlobalLogChannel <- string(jsonData)
+	wss.GlobalLogChannel <- string(jsonData)
 
 	// Send the block data as a JSON response
 	c.JSON(http.StatusOK, response)
@@ -83,16 +84,22 @@ func GetBlock(c *gin.Context) {
 	if n, err := strconv.Atoi(number); err == nil {
 		// Convert the decimal number to a hexadecimal string
 		blockNumber = utils.DecimalToHex(int64(n))
-	}
-
-	// Check if the input is a valid hexadecimal number
-	if strings.HasPrefix(number, "0x") {
-		bigInt := new(big.Int)
-		if _, success := bigInt.SetString(number[2:], 16); success {
-			// If valid, use the hexadecimal input as is
-			blockNumber = number
+	} else {
+		// Check if the input is a valid hexadecimal number
+		if strings.HasPrefix(number, "0x") {
+			bigInt := new(big.Int)
+			if _, success := bigInt.SetString(number[2:], 16); success {
+				// If valid, use the hexadecimal input as is
+				blockNumber = number
+			} else {
+				// Respond with an error if the input is invalid
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "'number' must be a valid decimal or hexadecimal string (e.g., '123' or '0x1A')",
+				})
+				return
+			}
 		} else {
-			// Respond with an error if the input is invalid
+			// Return an error if the input is not a valid hexadecimal number
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "'number' must be a valid decimal or hexadecimal string (e.g., '123' or '0x1A')",
 			})
@@ -122,7 +129,8 @@ func GetBlock(c *gin.Context) {
 
 	response := b
 	jsonData, _ := json.Marshal(response)
-	ws.GlobalLogChannel <- string(jsonData)
+	// ws.GlobalLogChannel <- string(jsonData)
+	wss.GlobalLogChannel <- string(jsonData)
 
 	// Send the block data as a JSON response
 	c.JSON(http.StatusOK, response)

@@ -9,7 +9,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/tracker"
 	"github.com/kyle-park-io/token-tracker/utils"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 
 	"github.com/gin-gonic/gin"
 )
@@ -76,7 +76,8 @@ func GetBlockPosition(c *gin.Context) {
 		BlockTimestamp: ResponseBlockTimestamp{Timestamp: timestamp, HexTimestamp: hexTimestamp, Date: t},
 		BlockPosition:  position}
 	jsonData, _ := json.Marshal(response)
-	ws.GlobalLogChannel <- string(jsonData)
+	// ws.GlobalLogChannel <- string(jsonData)
+	wss.GlobalLogChannel <- string(jsonData)
 
 	c.JSON(http.StatusOK, response)
 }

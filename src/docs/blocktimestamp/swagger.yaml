@@ -198,6 +198,15 @@ definitions:
         example: Description of the error
         type: string
     type: object
+  router.ResponseBalance:
+    properties:
+      balance:
+        example: '100000000'
+        type: string
+      hexBalance:
+        example: '0x5f5e100'
+        type: string
+    type: object
   router.ResponseBlockNumber:
     properties:
       blockNumber:
@@ -359,6 +368,83 @@ paths:
       summary: Retrieve block timestamp by block number
       tags:
         - Block
+  /get/getERC20Balance:
+    get:
+      description:
+        Fetches the balance of a specific ERC-20 token for a given Ethereum
+        account, returning it in both decimal and hexadecimal formats.
+      parameters:
+        - description: Ethereum account address
+          in: query
+          name: account
+          required: true
+          type: string
+        - description: ERC-20 token contract address
+          in: query
+          name: tokenAddress
+          required: true
+          type: string
+        - description:
+            (optional) Block tag (e.g., 'latest', 'earliest', or a block
+            number in decimal/hexadecimal)
+          in: query
+          name: tag
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved the ERC-20 token balance
+          schema:
+            $ref: '#/definitions/router.ResponseBalance'
+        '400':
+          description:
+            Invalid input, such as incorrect Ethereum address, token address,
+            or tag
+          schema:
+            $ref: '#/definitions/router.ErrorResponse'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/router.ErrorResponse'
+      summary: Retrieve the balance of an ERC-20 token for a given Ethereum account
+      tags:
+        - Balance
+  /get/getETHBalance:
+    get:
+      description:
+        Fetches the balance of a given Ethereum account, returning it in
+        both decimal and hexadecimal formats.
+      parameters:
+        - description: Ethereum account address
+          in: query
+          name: account
+          required: true
+          type: string
+        - description:
+            (optional) Block tag (e.g., 'latest', 'earliest', or a block
+            number in decimal/hexadecimal)
+          in: query
+          name: tag
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved the Ethereum balance
+          schema:
+            $ref: '#/definitions/router.ResponseBalance'
+        '400':
+          description: Invalid input, such as incorrect Ethereum address or tag
+          schema:
+            $ref: '#/definitions/router.ErrorResponse'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/router.ErrorResponse'
+      summary: Retrieve the balance of an Ethereum account
+      tags:
+        - Balance
   /get/getLatestBlockNumber:
     get:
       description:

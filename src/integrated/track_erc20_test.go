@@ -243,4 +243,16 @@ forLoop2:
 
 		time.Sleep(2 * time.Second)
 	}
+
+	result := Result{Account: account, TokenAddress: tokenAddress, Balance: balance, BalanceHex: balanceHex,
+		TransferHistory: transferHistory}
+	fileName := tokenAddress + ".json"
+	folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
+	filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
+	if err := utils.CreateFolderAndFile(folderPath, fileName); err != nil {
+		t.Error(err)
+	}
+	if err := utils.SaveJSONToFile(result, filePath); err != nil {
+		t.Error(err)
+	}
 }

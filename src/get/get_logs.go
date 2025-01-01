@@ -7,6 +7,7 @@ import (
 
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/types/request"
+	"github.com/kyle-park-io/token-tracker/wss"
 )
 
 type EventLogsQuery struct {
@@ -34,7 +35,10 @@ func GetLogs(params EventLogsQuery) (interface{}, error) {
 
 	emptyArray := []byte("[]")
 	if bytes.Equal(resp.Result, emptyArray) {
-		logger.Log.Infoln("The result is an empty array")
+		logger.Log.Infoln("GetLogs result is an empty array")
+		// ws.GlobalLogChannel <- "GetLogs result is an empty array"
+		wss.GlobalLogChannel <- "GetLogs result is an empty array"
+
 		return "", nil
 	}
 

@@ -15,7 +15,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/types/response"
 	"github.com/kyle-park-io/token-tracker/utils"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -98,12 +98,16 @@ func TrackETH(c *gin.Context) {
 		logger.Log.Warnln(err)
 	}
 	logger.Log.Infof("%s Block Position: %+v\n", yearMonthDay, blockPositionByDate)
+	// ws.GlobalLogChannel <- fmt.Sprintf("%s Block Position: %+v\n", yearMonthDay, blockPositionByDate)
+	wss.GlobalLogChannel <- fmt.Sprintf("%s Block Position: %+v\n", yearMonthDay, blockPositionByDate)
 
 	blockPositionByNextDate, err := integrated.GetBlockPosition(nextDay, timezone)
 	if err != nil {
 		logger.Log.Warnln(err)
 	}
 	logger.Log.Infof("%s Block Position: %+v\n", nextDay, blockPositionByNextDate)
+	// ws.GlobalLogChannel <- fmt.Sprintf("%s Block Position: %+v\n", nextDay, blockPositionByNextDate)
+	wss.GlobalLogChannel <- fmt.Sprintf("%s Block Position: %+v\n", nextDay, blockPositionByNextDate)
 
 	// ETH
 	count := 0
@@ -147,7 +151,8 @@ func TrackETH(c *gin.Context) {
 			_ = utils.SaveJSONToFile(result, filePath)
 
 			jsonData, _ := json.Marshal(result)
-			ws.GlobalLogChannel <- string(jsonData)
+			// ws.GlobalLogChannel <- string(jsonData)
+			wss.GlobalLogChannel <- string(jsonData)
 
 			c.JSON(http.StatusOK, result)
 			return
@@ -165,7 +170,8 @@ func TrackETH(c *gin.Context) {
 			_ = utils.SaveJSONToFile(result, filePath)
 
 			jsonData, _ := json.Marshal(result)
-			ws.GlobalLogChannel <- string(jsonData)
+			// ws.GlobalLogChannel <- string(jsonData)
+			wss.GlobalLogChannel <- string(jsonData)
 
 			c.JSON(http.StatusOK, result)
 			return
@@ -187,13 +193,19 @@ func TrackETH(c *gin.Context) {
 				transferHistory = append(transferHistory, integrated.TransferHistory{TxHash: transaction.Hash, From: transaction.From,
 					To: transaction.To, Value: value, ValueHex: transaction.Value, Timestamp: unixTimestamp})
 				logger.Log.Infof("Transfer Info: from: %s, to: %s, value: %s\n", transaction.From, transaction.To, transaction.Value)
+				// ws.GlobalLogChannel <- fmt.Sprintf("Transfer Info: from: %s, to: %s, value: %s\n", transaction.From, transaction.To, transaction.Value)
+				wss.GlobalLogChannel <- fmt.Sprintf("Transfer Info: from: %s, to: %s, value: %s\n", transaction.From, transaction.To, transaction.Value)
 
 				count++
 				logger.Log.Info("Event Count: ", count)
+				// ws.GlobalLogChannel <- fmt.Sprintf("Event Count: %d\n", count)
+				wss.GlobalLogChannel <- fmt.Sprintf("Event Count: %d\n", count)
 			}
 		}
 		blockCount++
 		logger.Log.Info("Block Count: ", blockCount)
+		// ws.GlobalLogChannel <- fmt.Sprintf("Block Count: %d\n", count)
+		wss.GlobalLogChannel <- fmt.Sprintf("Block Count: %d\n", blockCount)
 
 		if count >= targetCount {
 
@@ -206,7 +218,8 @@ func TrackETH(c *gin.Context) {
 			_ = utils.SaveJSONToFile(result, filePath)
 
 			jsonData, _ := json.Marshal(result)
-			ws.GlobalLogChannel <- string(jsonData)
+			// ws.GlobalLogChannel <- string(jsonData)
+			wss.GlobalLogChannel <- string(jsonData)
 
 			c.JSON(http.StatusOK, result)
 			return

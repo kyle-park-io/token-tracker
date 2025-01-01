@@ -16,7 +16,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/types/response"
 	"github.com/kyle-park-io/token-tracker/utils"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -107,12 +107,16 @@ func TrackERC20(c *gin.Context) {
 		logger.Log.Warnln(err)
 	}
 	logger.Log.Infof("%s Block Position: %+v\n", yearMonthDay, blockPositionByDate)
+	// ws.GlobalLogChannel <- fmt.Sprintf("%s Block Position: %+v\n", yearMonthDay, blockPositionByDate)
+	wss.GlobalLogChannel <- fmt.Sprintf("%s Block Position: %+v\n", yearMonthDay, blockPositionByDate)
 
 	blockPositionByNextDate, err := integrated.GetBlockPosition(nextDay, timezone)
 	if err != nil {
 		logger.Log.Warnln(err)
 	}
 	logger.Log.Infof("%s Block Position: %+v\n", nextDay, blockPositionByNextDate)
+	// ws.GlobalLogChannel <- fmt.Sprintf("%s Block Position: %+v\n", nextDay, blockPositionByNextDate)
+	wss.GlobalLogChannel <- fmt.Sprintf("%s Block Position: %+v\n", nextDay, blockPositionByNextDate)
 
 	// ERC20
 	count := 0
@@ -190,6 +194,8 @@ forLoop2:
 	for _, r := range blockRanges {
 
 		logger.Log.Infof("Find Transfer Event, FromBlock: %s, ToBlock: %s\n", r[0], r[1])
+		// ws.GlobalLogChannel <- fmt.Sprintf("Find Transfer Event, FromBlock: %s, ToBlock: %s\n", r[0], r[1])
+		wss.GlobalLogChannel <- fmt.Sprintf("Find Transfer Event, FromBlock: %s, ToBlock: %s\n", r[0], r[1])
 
 		// Calculate elapsed time
 		elapsed := time.Since(start).Seconds()
@@ -202,7 +208,8 @@ forLoop2:
 			_ = utils.SaveJSONToFile(result, filePath)
 
 			jsonData, _ := json.Marshal(result)
-			ws.GlobalLogChannel <- string(jsonData)
+			// ws.GlobalLogChannel <- string(jsonData)
+			wss.GlobalLogChannel <- string(jsonData)
 
 			c.JSON(http.StatusOK, result)
 			return
@@ -268,9 +275,13 @@ forLoop2:
 			transferHistory = append(transferHistory, integrated.TransferHistory{TxHash: txHash, From: event.From,
 				To: event.To, Value: value, ValueHex: event.Value, Timestamp: unixTimestamp})
 			logger.Log.Infof("Transfer Info: from: %s, to: %s, value: %s\n", event.From, event.To, event.Value)
+			// ws.GlobalLogChannel <- fmt.Sprintf("Transfer Info: from: %s, to: %s, value: %s\n", event.From, event.To, event.Value)
+			wss.GlobalLogChannel <- fmt.Sprintf("Transfer Info: from: %s, to: %s, value: %s\n", event.From, event.To, event.Value)
 
 			count++
 			logger.Log.Info("Event Count: ", count)
+			// ws.GlobalLogChannel <- fmt.Sprintf("Event Count: %d\n", count)
+			wss.GlobalLogChannel <- fmt.Sprintf("Event Count: %d\n", count)
 		}
 
 		if count >= targetCount {
@@ -284,7 +295,8 @@ forLoop2:
 			_ = utils.SaveJSONToFile(result, filePath)
 
 			jsonData, _ := json.Marshal(result)
-			ws.GlobalLogChannel <- string(jsonData)
+			// ws.GlobalLogChannel <- string(jsonData)
+			wss.GlobalLogChannel <- string(jsonData)
 
 			c.JSON(http.StatusOK, result)
 			return
@@ -292,4 +304,18 @@ forLoop2:
 
 		time.Sleep(2 * time.Second)
 	}
+
+	result := integrated.Result{Account: account, TokenAddress: tokenAddress, Balance: balance, BalanceHex: balanceHex,
+		TransferHistory: transferHistory}
+	fileName := tokenAddress + ".json"
+	folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
+	filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
+	_ = utils.CreateFolderAndFile(folderPath, fileName)
+	_ = utils.SaveJSONToFile(result, filePath)
+
+	jsonData, _ := json.Marshal(result)
+	// ws.GlobalLogChannel <- string(jsonData)
+	wss.GlobalLogChannel <- string(jsonData)
+
+	c.JSON(http.StatusOK, result)
 }

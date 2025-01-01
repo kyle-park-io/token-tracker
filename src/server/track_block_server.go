@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	docs "github.com/kyle-park-io/token-tracker/docs/transfertracker"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/router"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 
+	docs "github.com/kyle-park-io/token-tracker/docs/transfertracker"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
@@ -48,7 +48,8 @@ func StartTransferTrackerServer() {
 			})
 		}
 
-		base.GET("/ws", ws.HandleWebSocket)
+		// base.GET("/ws", ws.HandleWebSocket)
+		base.GET("/ws", wss.HandleWebSocket)
 	}
 
 	docs.SwaggerInfo.BasePath = api_url_prefix
@@ -69,6 +70,10 @@ func StartTransferTrackerServer() {
 
 			// block position
 			get.GET("/getBlockPosition", router.GetBlockPosition) // Returns JSON structure
+
+			// balance
+			get.GET("/getETHBalance", router.GetETHBalance)     // Returns JSON structure
+			get.GET("/getERC20Balance", router.GetERC20Balance) // Returns JSON structure
 		}
 
 		track := v1.Group("/track")

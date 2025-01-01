@@ -36,6 +36,7 @@ func InitConfig() error {
 	if env == "prod" {
 		err := utils.CheckPVCData()
 		if err != nil {
+			logger.Log.Error(err)
 			return err
 		}
 	}

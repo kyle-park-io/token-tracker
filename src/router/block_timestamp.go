@@ -11,7 +11,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/get"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/utils"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,12 +39,19 @@ func GetBlockTimestamp(c *gin.Context) {
 	// Check if the input is a decimal number
 	if n, err := strconv.Atoi(number); err == nil {
 		blockNumber = utils.DecimalToHex(int64(n))
-	}
-	// Check if the input is a hexadecimal number
-	if strings.HasPrefix(number, "0x") {
-		bigInt := new(big.Int)
-		if _, success := bigInt.SetString(number[2:], 16); success {
-			blockNumber = number
+	} else {
+		// Check if the input is a hexadecimal number
+		if strings.HasPrefix(number, "0x") {
+			bigInt := new(big.Int)
+			if _, success := bigInt.SetString(number[2:], 16); success {
+				blockNumber = number
+			} else {
+				// Return an error if the input is not a valid hexadecimal number
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "'number' must be a valid decimal or hexadecimal string (e.g., '123' or '0x1A')",
+				})
+				return
+			}
 		} else {
 			// Return an error if the input is not a valid hexadecimal number
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -70,7 +77,8 @@ func GetBlockTimestamp(c *gin.Context) {
 	response := ResponseBlockTimestamp{Timestamp: timestamp, HexTimestamp: hexTimestamp,
 		Date: date}
 	jsonData, _ := json.Marshal(response)
-	ws.GlobalLogChannel <- string(jsonData)
+	// ws.GlobalLogChannel <- string(jsonData)
+	wss.GlobalLogChannel <- string(jsonData)
 
 	c.JSON(http.StatusOK, response)
 }

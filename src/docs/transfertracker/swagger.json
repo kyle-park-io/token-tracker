@@ -138,6 +138,99 @@
         }
       }
     },
+    "/get/getERC20Balance": {
+      "get": {
+        "description": "Fetches the balance of a specific ERC-20 token for a given Ethereum account, returning it in both decimal and hexadecimal formats.",
+        "produces": ["application/json"],
+        "tags": ["Balance"],
+        "summary": "Retrieve the balance of an ERC-20 token for a given Ethereum account",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Ethereum account address",
+            "name": "account",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "ERC-20 token contract address",
+            "name": "tokenAddress",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "(optional) Block tag (e.g., 'latest', 'earliest', or a block number in decimal/hexadecimal)",
+            "name": "tag",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the ERC-20 token balance",
+            "schema": {
+              "$ref": "#/definitions/router.ResponseBalance"
+            }
+          },
+          "400": {
+            "description": "Invalid input, such as incorrect Ethereum address, token address, or tag",
+            "schema": {
+              "$ref": "#/definitions/router.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/router.ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/get/getETHBalance": {
+      "get": {
+        "description": "Fetches the balance of a given Ethereum account, returning it in both decimal and hexadecimal formats.",
+        "produces": ["application/json"],
+        "tags": ["Balance"],
+        "summary": "Retrieve the balance of an Ethereum account",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Ethereum account address",
+            "name": "account",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "(optional) Block tag (e.g., 'latest', 'earliest', or a block number in decimal/hexadecimal)",
+            "name": "tag",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the Ethereum balance",
+            "schema": {
+              "$ref": "#/definitions/router.ResponseBalance"
+            }
+          },
+          "400": {
+            "description": "Invalid input, such as incorrect Ethereum address or tag",
+            "schema": {
+              "$ref": "#/definitions/router.ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/router.ErrorResponse"
+            }
+          }
+        }
+      }
+    },
     "/get/getLatestBlockNumber": {
       "get": {
         "description": "Fetches the latest block number from the blockchain in both decimal and hexadecimal formats.",
@@ -590,6 +683,19 @@
         "error": {
           "type": "string",
           "example": "Description of the error"
+        }
+      }
+    },
+    "router.ResponseBalance": {
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "string",
+          "example": "100000000"
+        },
+        "hexBalance": {
+          "type": "string",
+          "example": "0x5f5e100"
         }
       }
     },

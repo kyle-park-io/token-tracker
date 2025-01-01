@@ -1,11 +1,13 @@
 package tracker
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/kyle-park-io/token-tracker/get"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/utils"
+	"github.com/kyle-park-io/token-tracker/wss"
 )
 
 type BlockPosition struct {
@@ -65,11 +67,19 @@ func TrackBlockTimestamp(targetTime int64) (BlockPosition, error) {
 		} else if timestamp < targetTime {
 			logger.Log.Info("The median value is smaller than the target time.")
 			logger.Log.Infof("low: %d, high: %d\n", low, high)
+			// ws.GlobalLogChannel <- "The median value is smaller than the target time."
+			// ws.GlobalLogChannel <- fmt.Sprintf("low: %d, high: %d\n", low, high)
+			wss.GlobalLogChannel <- "The median value is smaller than the target time."
+			wss.GlobalLogChannel <- fmt.Sprintf("low: %d, high: %d\n", low, high)
 
 			low = mid + 1
 		} else {
 			logger.Log.Info("The median value is bigger than the target time.")
 			logger.Log.Infof("low: %d, high: %d\n", low, high)
+			// ws.GlobalLogChannel <- "The median value is bigger than the target time."
+			// ws.GlobalLogChannel <- fmt.Sprintf("low: %d, high: %d\n", low, high)
+			wss.GlobalLogChannel <- "The median value is bigger than the target time."
+			wss.GlobalLogChannel <- fmt.Sprintf("low: %d, high: %d\n", low, high)
 
 			high = mid - 1
 		}

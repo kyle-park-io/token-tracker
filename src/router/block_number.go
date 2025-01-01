@@ -7,7 +7,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/get"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/utils"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 
 	"github.com/gin-gonic/gin"
 )
@@ -40,7 +40,8 @@ func GetLatestBlockNumber(c *gin.Context) {
 
 	response := ResponseBlockNumber{BlockNumber: blockNumber, HexBlockNumber: string(hexBlokNumber)}
 	jsonData, _ := json.Marshal(response)
-	ws.GlobalLogChannel <- string(jsonData)
+	// ws.GlobalLogChannel <- string(jsonData)
+	wss.GlobalLogChannel <- string(jsonData)
 
 	c.JSON(http.StatusOK, response)
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/kyle-park-io/token-tracker/internal/config"
 	"github.com/kyle-park-io/token-tracker/logger"
@@ -12,9 +13,8 @@ import (
 )
 
 func main() {
-	logger.InitLogger()
-	logger.Log.Info("Hi! i'm token tracker.")
 
+	// env
 	env := "dev"
 	viper.Set("ENV", env)
 	switch env {
@@ -22,18 +22,27 @@ func main() {
 		os.Setenv("ROOT_PATH", "/home/kyle/code/token-tracker/src")
 		viper.Set("ROOT_PATH", "/home/kyle/code/token-tracker/src")
 
-		os.Setenv("CONFIG_PATH", "/home/kyle/code/token-tracker/src/configs/config.yaml")
-		if err := config.InitConfig(); err != nil {
-			logger.Log.Fatalf("Check Errors, %v", err)
-		}
+		os.Setenv("LOG_PATH", viper.GetString("ROOT_PATH")+"/logs")
+		viper.Set("LOG_PATH", viper.GetString("ROOT_PATH")+"/logs")
 	case "prod":
 		os.Setenv("ROOT_PATH", "/app")
 		viper.Set("ROOT_PATH", "/app")
 
-		os.Setenv("CONFIG_PATH", "/app/configs/config.yaml")
-		if err := config.InitConfig(); err != nil {
-			logger.Log.Fatalf("Check Errors, %v", err)
-		}
+		os.Setenv("LOG_PATH", viper.GetString("ROOT_PATH")+"/../data/logs")
+		viper.Set("LOG_PATH", viper.GetString("ROOT_PATH")+"/../data/logs")
+	}
+
+	// zap logger
+	logger.InitLogger()
+	logger.Log.Info("Hi! i'm token tracker.")
+
+	// config
+	os.Setenv("CONFIG_PATH", viper.GetString("ROOT_PATH")+"/configs/config.yaml")
+	if err := config.InitConfig(); err != nil {
+		logger.Log.Fatalf("Check Errors, %v", err)
+	}
+	if env == "prod" {
+		time.Sleep(10 * time.Second)
 	}
 
 	// Create the root command

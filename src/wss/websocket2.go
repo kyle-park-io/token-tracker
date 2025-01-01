@@ -1,4 +1,4 @@
-package ws
+package wss
 
 import (
 	"net/http"
@@ -20,10 +20,9 @@ var upgrader = websocket.Upgrader{
 
 var GlobalLogChannel = make(chan string, 10)
 
-var (
-	connections = make(map[*websocket.Conn]bool)
-	mu          sync.Mutex
-)
+var connections sync.Map
+
+var lastPongTime time.Time
 
 func HandleWebSocket(c *gin.Context) {
 	logger.Log.Infoln("Connection initiated")
@@ -47,74 +46,81 @@ func HandleWebSocket(c *gin.Context) {
 
 	// Set a Pong handler to verify the connection is alive
 	conn.SetPongHandler(func(appData string) error {
-		logger.Log.Info("Received Pong from client")
+		lastPongTime = time.Now()
+		logger.Log.Info("Pong received at", zap.Time("time", lastPongTime))
 		return nil
 	})
 
 	// Start a goroutine to send periodic Ping messages to the client
 	go sendPing(conn)
 
-	// Continuously read messages from the global log channel and send them to all WebSocket clients
+	// Listen for incoming messages on GlobalLogChannel and broadcast them
 	for msg := range GlobalLogChannel {
-		mu.Lock() // Ensure thread-safe access to the connections map
-		for client := range connections {
-			if err := client.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-				logger.Log.Error("Failed to send message to WebSocket client", zap.Error(err))
-
-				// Close and remove the faulty connection
-				client.Close()
-				delete(connections, client)
-			}
-		}
-		mu.Unlock() // Release the lock after sending messages
+		broadcastMessage(msg)
 	}
 }
 
 // Periodically send Ping messages to the WebSocket client to ensure the connection is active
 func sendPing(conn *websocket.Conn) {
-	for {
+	ticker := time.NewTicker(30 * time.Second) // Interval between Ping messages
+	defer ticker.Stop()
+
+	for range ticker.C {
 		if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-			logger.Log.Error("Ping failed, closing connection", zap.Error(err))
+			logger.Log.Error("Ping failed, removing(closing) connection", zap.Error(err))
+			removeConnection(conn)
 			conn.Close()
-			delete(connections, conn)
-			break
+			return
 		}
-		time.Sleep(30 * time.Second) // Interval between Ping messages
 	}
+}
+
+// Broadcast messages to all connected clients
+func broadcastMessage(message string) {
+	connections.Range(func(key, value interface{}) bool {
+		conn := key.(*websocket.Conn)
+		if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
+			logger.Log.Error("Failed to send message to client, removing(closing) connection", zap.Error(err))
+			removeConnection(conn)
+			conn.Close() // Close the faulty connection
+		}
+		return true
+	})
 }
 
 // Add a WebSocket connection to the connections map
 func addConnection(conn *websocket.Conn) {
-	mu.Lock()
-	connections[conn] = true
-	mu.Unlock()
+	connections.Store(conn, true)
 }
 
 // Remove a WebSocket connection from the connections map
 func removeConnection(conn *websocket.Conn) {
-	mu.Lock()
-	delete(connections, conn)
-	mu.Unlock()
+	connections.Delete(conn)
 }
 
+// Shut down the WebSocket server and close all connections
 func shutdownServer() {
 	logger.Log.Info("Shutting down WebSocket server...")
 	closeAllConnections()
 }
 
+// Close all active WebSocket connections
 func closeAllConnections() {
-	mu.Lock()
-	defer mu.Unlock()
-	for conn := range connections {
-		conn.Close()              // Close the connection
-		delete(connections, conn) // Remove from the map
-	}
+	connections.Range(func(key, value interface{}) bool {
+		conn := key.(*websocket.Conn)
+		conn.Close()             // Close the WebSocket connection
+		connections.Delete(conn) // Remove from the map
+		return true
+	})
 	logger.Log.Info("All connections have been closed.")
 }
 
 // Get the number of active connections
 func getConnectionCount() int {
-	mu.Lock()
-	defer mu.Unlock()
-	return len(connections)
+	count := 0
+	connections.Range(func(key, value interface{}) bool {
+		count++
+		return true
+	})
+	return count
 }

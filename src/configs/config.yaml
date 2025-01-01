@@ -16,7 +16,7 @@ server:
       url_prefix: '/'
       api_url_prefix: ''
     prod:
-      url_prefix: '/recoder'
+      url_prefix: '/recorder'
       api_url_prefix: ''
   tracker:
     dev:

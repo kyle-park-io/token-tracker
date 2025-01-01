@@ -19,7 +19,10 @@ func CheckPVCData() error {
 	b, _ := FileExists(pvcPath)
 	if b {
 		logger.Log.Infoln("Block timestamp is existed in PVC. copy data.")
-		copyPVCDataToServer(pvcPath, jsonPath)
+		err := copyPVCDataToServer(pvcPath, jsonPath)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

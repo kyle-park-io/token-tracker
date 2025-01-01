@@ -1,0 +1,24 @@
+{
+  "account": "0x2bd25402F31Eb29B4fbDDD0A92aFd652408d9219",
+  "tokenAddress": "0xc7290Af237d1D3F6b207B7acB3DD186b868da500",
+  "balance": "562500000000000000000000",
+  "balanceHex": "0x771d2fa45345aa900000",
+  "transfer_history": [
+    {
+      "txHash": "0xedb85de060c5fe1a5263d5c57c0bcea7f938a79a33f64c572fe6871649b4a4fc",
+      "from": "0x2bd25402f31eb29b4fbddd0a92afd652408d9219",
+      "to": "0xc7290af237d1d3f6b207b7acb3dd186b868da500",
+      "value": "28125000000000000000000",
+      "valueHex": "0x5f4a8c8375d15540000",
+      "timestamp": 1735393115
+    },
+    {
+      "txHash": "0xedb85de060c5fe1a5263d5c57c0bcea7f938a79a33f64c572fe6871649b4a4fc",
+      "from": "0x2bd25402f31eb29b4fbddd0a92afd652408d9219",
+      "to": "0xe655f533130571f1a367b91e3e5b3c95c0dac145",
+      "value": "534375000000000000000000",
+      "valueHex": "0x712886dc1be8953c0000",
+      "timestamp": 1735393115
+    }
+  ]
+}

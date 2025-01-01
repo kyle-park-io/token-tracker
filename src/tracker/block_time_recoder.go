@@ -9,7 +9,7 @@ import (
 	"github.com/kyle-park-io/token-tracker/get"
 	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/utils"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 )
 
 type BlockTimestamp struct {
@@ -91,10 +91,11 @@ func EnhancedBlockTimestampRecorder(id int, currentBlockNumber string, numRecord
 			// time.Sleep(time.Duration(math.MaxInt64))
 
 			// Generate a random hexadecimal string less than the latest block number.
-			r, _ := utils.RandomHexBelow(currentBlockNumber)
-			// if err != nil {
-			// 	errorChan <- err
-			// }
+			r, err := utils.RandomHexBelow(currentBlockNumber)
+			if err != nil {
+				logger.Log.Warnf("random error?")
+				errorChan <- err
+			}
 
 			// Use sync.Map to check for duplicate keys.
 			_, ok := IsBlockWithDataMap.Load(r)
@@ -108,13 +109,14 @@ func EnhancedBlockTimestampRecorder(id int, currentBlockNumber string, numRecord
 			t, err := get.GetBlockTimestampByNumber(r)
 			if err != nil {
 				errorChan <- err
-				time.Sleep(3 * time.Second)
+				// time.Sleep(3 * time.Second)
 				continue
 			}
 
 			log := fmt.Sprintf("ID: %d, Current number of recorded block: %d", id, internalCount)
 			logger.Log.Infoln(log)
-			ws.GlobalLogChannel <- log
+			// ws.GlobalLogChannel <- log
+			wss.GlobalLogChannel <- log
 
 			blockTimestampMap[r] = t
 			recordCount++
@@ -130,6 +132,8 @@ func EnhancedBlockTimestampRecorder(id int, currentBlockNumber string, numRecord
 				blockTimestampMap = make(map[string]string, numRecords)
 				recordCount = 0
 			}
+
+			time.Sleep(10 * time.Second)
 		}
 	}
 }

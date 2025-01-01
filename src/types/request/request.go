@@ -8,8 +8,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/kyle-park-io/token-tracker/logger"
 	"github.com/kyle-park-io/token-tracker/types/response"
-	"github.com/kyle-park-io/token-tracker/ws"
+	"github.com/kyle-park-io/token-tracker/wss"
 
 	"github.com/spf13/viper"
 )
@@ -71,11 +72,16 @@ func (j *JSONRPCRequest) SendRequest() (response.JSONRPCResponse, error) {
 		if rpcResponse.Error != nil {
 			if isRateLimitError(rpcResponse.Error) {
 				//TODO: 429 Error
-				ws.GlobalLogChannel <- fmt.Sprintf("Rate limit error (429) encountered. Retrying... Attempt %d/%d", attempt, maxRetries)
+				// ws.GlobalLogChannel <- fmt.Sprintf("Rate limit error (429) encountered. Retrying... Attempt %d/%d", attempt, maxRetries)
+				wss.GlobalLogChannel <- fmt.Sprintf("Rate limit error (429) encountered. Retrying... Attempt %d/%d", attempt, maxRetries)
 				time.Sleep(time.Duration(retryInterval) * time.Second)
 			} else {
 				e := fmt.Errorf("RPC error: %v", *rpcResponse.Error)
-				ws.GlobalLogChannel <- e.Error()
+				// ws.GlobalLogChannel <- e.Error()
+				wss.GlobalLogChannel <- e.Error()
+				logger.Log.Warnln("Maybe here.")
+				logger.Log.Warnf("%+v\n", j)
+				time.Sleep(120 * time.Second)
 				return response.JSONRPCResponse{}, e
 			}
 		} else {
@@ -84,7 +90,8 @@ func (j *JSONRPCRequest) SendRequest() (response.JSONRPCResponse, error) {
 	}
 
 	finalErr := fmt.Errorf("RPC call failed after %d attempts", maxRetries)
-	ws.GlobalLogChannel <- finalErr.Error()
+	// ws.GlobalLogChannel <- finalErr.Error()
+	wss.GlobalLogChannel <- finalErr.Error()
 	return response.JSONRPCResponse{}, finalErr
 }
 
