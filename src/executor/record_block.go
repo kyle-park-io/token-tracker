@@ -53,6 +53,7 @@ func EnhancedBlockTimestampRecorder() {
 	currentBlockNumber, err := get.GetBlockNumber()
 	if err != nil {
 		logger.Log.Errorln(err)
+		logger.Log.Fatalln(err)
 	}
 
 	// number of goroutine

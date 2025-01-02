@@ -80,8 +80,9 @@ func StartTransferTrackerServer() {
 		{
 			// track Balance
 			// track.GET("/trackETH", router.TrackETH)     // Returns JSON structure
-			track.GET("/trackETH", router.TrackETHBatch) // Returns JSON structure
-			track.GET("/trackERC20", router.TrackERC20)  // Returns JSON structure
+			track.GET("/trackETH", router.TrackETHBatch)   // Returns JSON structure
+			track.GET("/trackETH2", router.TrackETHBatch2) // Returns JSON structure
+			track.GET("/trackERC20", router.TrackERC20)    // Returns JSON structure
 		}
 
 		eg := v1.Group("/example")

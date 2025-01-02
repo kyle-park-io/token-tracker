@@ -460,6 +460,66 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/track/trackETH2": {
+            "get": {
+                "description": "Tracks Ethereum account activity, including transactions and balance changes, within a given date and target count.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Track"
+                ],
+                "summary": "Track Ethereum account balance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ethereum account address (e.g., '0x1234567890abcdef1234567890abcdef12345678')",
+                        "name": "account",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Date in 'YYYY-MM-DD' format",
+                        "name": "date",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of transactions to retrieve",
+                        "name": "targetCount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Time limit for processing in seconds",
+                        "name": "timeLimit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/integrated.Result"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

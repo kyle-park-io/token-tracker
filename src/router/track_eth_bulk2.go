@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/kyle-park-io/token-tracker/get"
@@ -22,7 +21,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// TrackETH godoc
+// TrackETH2 godoc
 // @Summary Track Ethereum account balance
 // @Description Tracks Ethereum account activity, including transactions and balance changes, within a given date and target count.
 // @Tags Track
@@ -34,8 +33,8 @@ import (
 // @Success 200 {object} integrated.Result
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /track/trackETH [get]
-func TrackETHBatch(c *gin.Context) {
+// @Router /track/trackETH2 [get]
+func TrackETHBatch2(c *gin.Context) {
 
 	account := c.Query("account")
 	// Ethereum address regex pattern
@@ -199,13 +198,36 @@ forLoop2:
 
 		f, _ := utils.HexToDecimal(r[0])
 		t, _ := utils.HexToDecimal(r[1])
-		var r []string
+		var r []get.RequestBalance
 		for i := f; i <= t; i++ {
-			r = append(r, utils.DecimalToHex(i))
+			r = append(r, get.RequestBalance{Address: account, Tag: utils.DecimalToHex(i)})
 		}
 
+		balances, err := get.GetBalanceBulk(r)
+		if err != nil {
+			logger.Log.Warnln(err)
+		}
+		bb, err := get.GetBalance(account, utils.DecimalToHex(t+1))
+		if err != nil {
+			logger.Log.Warnln(err)
+		}
+
+		var blockList []int
+		for i := 0; i <= int(t)-int(f)-1; i++ {
+			if balances[i] != balances[i+1] {
+				blockList = append(blockList, i+int(f))
+			}
+		}
+		if balances[len(balances)-1] != bb {
+			blockList = append(blockList, int(t))
+		}
+
+		var r2 []string
+		for i := 0; i < len(blockList); i++ {
+			r2 = append(r2, utils.DecimalToHex(int64(blockList[i])))
+		}
 		// TODO: 429 Error
-		b, err := get.GetBulkBlock(r, true)
+		b, err := get.GetBulkBlock(r2, true)
 		if err != nil {
 			logger.Log.Warnln(err)
 		}
@@ -280,21 +302,4 @@ forLoop2:
 	wss.GlobalLogChannel <- string(jsonData)
 
 	c.JSON(http.StatusOK, result)
-}
-
-type SafeSlice struct {
-	slice []integrated.TransferHistory
-	mu    sync.Mutex
-}
-
-func (s *SafeSlice) Append(value integrated.TransferHistory) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.slice = append(s.slice, value)
-}
-
-func (s *SafeSlice) GetAll() []integrated.TransferHistory {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return append([]integrated.TransferHistory{}, s.slice...)
 }
