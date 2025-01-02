@@ -20,9 +20,18 @@
   </head>
   <body>
     <h1>Token-Tracker Logs</h1>
+    <div id="swagger">
+      <a id="swagger-link" href="#" target="_blank" rel="noopener noreferrer"
+        >Swagger API Docs</a
+      >
+    </div>
     <div id="logs"></div>
 
     <script>
+      // swagger api docs
+      document.getElementById('swagger-link').href =
+        `https://${location.host}/tracker/swagger/index.html#/`;
+
       // Establish WebSocket connection
       const socket = new WebSocket('wss://' + location.host + '/tracker/ws');
       const logsDiv = document.getElementById('logs');
