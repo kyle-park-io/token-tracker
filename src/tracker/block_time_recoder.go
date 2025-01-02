@@ -133,7 +133,7 @@ func EnhancedBlockTimestampRecorder(id int, currentBlockNumber string, numRecord
 				recordCount = 0
 			}
 
-			time.Sleep(10 * time.Second)
+			time.Sleep(20 * time.Second)
 		}
 	}
 }

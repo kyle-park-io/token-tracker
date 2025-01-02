@@ -92,7 +92,7 @@ func TestTrackETH(t *testing.T) {
 			continue
 		} else if balance == "" {
 			blockNumber, _ := utils.HexToDecimal(block.Number)
-			tag := utils.DecimalToHex(blockNumber - 1)
+			tag := utils.DecimalToHex(blockNumber)
 			bal, err := get.GetBalance(account, tag)
 			if err != nil {
 				t.Error(err)

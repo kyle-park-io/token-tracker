@@ -99,7 +99,7 @@ forLoop:
 			toBlockNumber = block.Number
 
 			blockNumber, _ := utils.HexToDecimal(toBlockNumber)
-			tag := utils.DecimalToHex(blockNumber - 1)
+			tag := utils.DecimalToHex(blockNumber)
 
 			// Example: ERC-20 balanceOf(address)
 			methodName := "balanceOf"

@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/kyle-park-io/token-tracker/get"
@@ -34,7 +35,7 @@ import (
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /track/trackETH [get]
-func TrackETH(c *gin.Context) {
+func TrackETHBatch(c *gin.Context) {
 
 	account := c.Query("account")
 	// Ethereum address regex pattern
@@ -111,25 +112,31 @@ func TrackETH(c *gin.Context) {
 
 	// ETH
 	count := 0
-	blockCount := 0
-	transferHistory := make([]integrated.TransferHistory, 0)
+	balance := ""
+	balanceHex := ""
+	// transferHistory := make([]integrated.TransferHistory, 0)
+	s := SafeSlice{}
+	fromBlockNumber := ""
+	toBlockNumber := ""
+
+forLoop:
 	for i := blockPositionByNextDate.High + 5; i >= blockPositionByDate.Low-5; i-- {
 
 		// TODO: 429 Error
-		b, err := get.GetBlockByNumber(utils.DecimalToHex(i), true)
+		b, err := get.GetBlockByNumber(utils.DecimalToHex(i), false)
 		if err != nil {
 			logger.Log.Warnln(err)
 		}
-		block, _ := b.(response.BlockWithTransactions)
+		block, _ := b.(response.BlockWithoutTransactions)
 
-		balance := ""
-		balanceHex := ""
 		bT := new(big.Int)
 		blockTimestamp, _ := bT.SetString(block.Timestamp[2:], 16)
 		if blockTimestamp.Cmp(nextDayBigInt) > 0 {
 			continue
-		} else if balance == "" {
-			blockNumber, _ := utils.HexToDecimal(block.Number)
+		} else {
+			toBlockNumber = block.Number
+
+			blockNumber, _ := utils.HexToDecimal(toBlockNumber)
 			tag := utils.DecimalToHex(blockNumber)
 			bal, err := get.GetBalance(account, tag)
 			// TODO: 429 Error
@@ -138,29 +145,42 @@ func TrackETH(c *gin.Context) {
 			}
 			balanceHex = string(bal)
 			balance, _ = utils.HexToDecimalString(balanceHex)
+
+			break forLoop
 		}
+	}
 
-		if blockTimestamp.Cmp(dayBigInt) < 0 {
+forLoop2:
+	for i := blockPositionByDate.Low - 5; i <= blockPositionByNextDate.High+5; i++ {
 
-			result := integrated.Result{Account: account, TokenAddress: tokenAddress, Balance: balance, BalanceHex: balanceHex,
-				TransferHistory: transferHistory}
-			fileName := tokenAddress + ".json"
-			folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
-			filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
-			_ = utils.CreateFolderAndFile(folderPath, fileName)
-			_ = utils.SaveJSONToFile(result, filePath)
-
-			jsonData, _ := json.Marshal(result)
-			// ws.GlobalLogChannel <- string(jsonData)
-			wss.GlobalLogChannel <- string(jsonData)
-
-			c.JSON(http.StatusOK, result)
-			return
+		// TODO: 429 Error
+		b, err := get.GetBlockByNumber(utils.DecimalToHex(i), false)
+		if err != nil {
+			logger.Log.Warnln(err)
 		}
+		block, _ := b.(response.BlockWithoutTransactions)
+
+		bT := new(big.Int)
+		blockTimestamp, _ := bT.SetString(block.Timestamp[2:], 16)
+
+		if blockTimestamp.Cmp(dayBigInt) >= 0 {
+			fromBlockNumber = block.Number
+			break forLoop2
+		}
+	}
+
+	maxResults := 10
+	blockRanges := integrated.SplitBlockRange(toBlockNumber, fromBlockNumber, int64(maxResults))
+	for _, r := range blockRanges {
+
+		logger.Log.Infof("Find Transfer Event, FromBlock: %s, ToBlock: %s\n", r[0], r[1])
+		// ws.GlobalLogChannel <- fmt.Sprintf("Find Transfer Event, FromBlock: %s, ToBlock: %s\n", r[0], r[1])
+		wss.GlobalLogChannel <- fmt.Sprintf("Find Transfer Event, FromBlock: %s, ToBlock: %s\n", r[0], r[1])
 
 		// Calculate elapsed time
 		elapsed := time.Since(start).Seconds()
 		if elapsed > float64(seconds) {
+			transferHistory := s.GetAll()
 			result := integrated.Result{Account: account, TokenAddress: tokenAddress, Balance: balance, BalanceHex: balanceHex,
 				TransferHistory: transferHistory}
 			fileName := tokenAddress + ".json"
@@ -177,38 +197,48 @@ func TrackETH(c *gin.Context) {
 			return
 		}
 
-		for _, transaction := range block.Transactions {
-
-			if transaction.From == lowercaseAccount || transaction.To == lowercaseAccount {
-				if transaction.Value == "0x0" {
-					continue
-				}
-
-				unixTimestamp, err := utils.HexToUnix(block.Timestamp)
-				if err != nil {
-					logger.Log.Error(err)
-				}
-
-				value, _ := utils.HexToDecimalString(transaction.Value)
-				transferHistory = append(transferHistory, integrated.TransferHistory{TxHash: transaction.Hash, From: transaction.From,
-					To: transaction.To, Value: value, ValueHex: transaction.Value, Timestamp: unixTimestamp})
-				logger.Log.Infof("Transfer Info: from: %s, to: %s, value: %s\n", transaction.From, transaction.To, transaction.Value)
-				// ws.GlobalLogChannel <- fmt.Sprintf("Transfer Info: from: %s, to: %s, value: %s\n", transaction.From, transaction.To, transaction.Value)
-				wss.GlobalLogChannel <- fmt.Sprintf("Transfer Info: from: %s, to: %s, value: %s\n", transaction.From, transaction.To, transaction.Value)
-
-				count++
-				logger.Log.Info("Event Count: ", count)
-				// ws.GlobalLogChannel <- fmt.Sprintf("Event Count: %d\n", count)
-				wss.GlobalLogChannel <- fmt.Sprintf("Event Count: %d\n", count)
-			}
+		// TODO: 429 Error
+		b, err := get.GetBulkBlockByRandomNumber(maxResults, true)
+		if err != nil {
+			logger.Log.Warnln(err)
 		}
-		blockCount++
-		logger.Log.Info("Block Count: ", blockCount)
-		// ws.GlobalLogChannel <- fmt.Sprintf("Block Count: %d\n", count)
-		wss.GlobalLogChannel <- fmt.Sprintf("Block Count: %d\n", blockCount)
+
+		go func() {
+
+			// TODO: 429 Error
+			blocks, _ := b.([]response.BlockWithTransactions)
+			for _, block := range blocks {
+				for _, transaction := range block.Transactions {
+					if transaction.From != lowercaseAccount && transaction.To != lowercaseAccount {
+						continue
+					}
+					if transaction.Value == "0x0" {
+						continue
+					}
+
+					unixTimestamp, err := utils.HexToUnix(block.Timestamp)
+					if err != nil {
+						logger.Log.Error(err)
+					}
+
+					value, _ := utils.HexToDecimalString(transaction.Value)
+
+					s.Append(integrated.TransferHistory{TxHash: transaction.Hash, From: transaction.From,
+						To: transaction.To, Value: value, ValueHex: transaction.Value, Timestamp: unixTimestamp})
+					logger.Log.Infof("Transfer Info: from: %s, to: %s, value: %s\n", transaction.From, transaction.To, transaction.Value)
+					// ws.GlobalLogChannel <- fmt.Sprintf("Transfer Info: from: %s, to: %s, value: %s\n", transaction.From, transaction.To, transaction.Value)
+					wss.GlobalLogChannel <- fmt.Sprintf("Transfer Info: from: %s, to: %s, value: %s\n", transaction.From, transaction.To, transaction.Value)
+
+					count++
+					logger.Log.Info("Event Count: ", count)
+					// ws.GlobalLogChannel <- fmt.Sprintf("Event Count: %d\n", count)
+					wss.GlobalLogChannel <- fmt.Sprintf("Event Count: %d\n", count)
+				}
+			}
+		}()
 
 		if count >= targetCount {
-
+			transferHistory := s.GetAll()
 			result := integrated.Result{Account: account, TokenAddress: tokenAddress, Balance: balance, BalanceHex: balanceHex,
 				TransferHistory: transferHistory}
 			fileName := tokenAddress + ".json"
@@ -224,5 +254,40 @@ func TrackETH(c *gin.Context) {
 			c.JSON(http.StatusOK, result)
 			return
 		}
+
+		time.Sleep(2 * time.Second)
+
 	}
+
+	transferHistory := s.GetAll()
+	result := integrated.Result{Account: account, TokenAddress: tokenAddress, Balance: balance, BalanceHex: balanceHex,
+		TransferHistory: transferHistory}
+	fileName := tokenAddress + ".json"
+	folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
+	filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
+	_ = utils.CreateFolderAndFile(folderPath, fileName)
+	_ = utils.SaveJSONToFile(result, filePath)
+
+	jsonData, _ := json.Marshal(result)
+	// ws.GlobalLogChannel <- string(jsonData)
+	wss.GlobalLogChannel <- string(jsonData)
+
+	c.JSON(http.StatusOK, result)
+}
+
+type SafeSlice struct {
+	slice []integrated.TransferHistory
+	mu    sync.Mutex
+}
+
+func (s *SafeSlice) Append(value integrated.TransferHistory) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.slice = append(s.slice, value)
+}
+
+func (s *SafeSlice) GetAll() []integrated.TransferHistory {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return append([]integrated.TransferHistory{}, s.slice...)
 }

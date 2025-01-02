@@ -7,8 +7,14 @@ infura:
   project-id: 'InputYourProjectId'
   https_endpoint: 'https://mainnet.infura.io/v3/InputYourProjectId'
   websocket_endpoint: 'wss://mainnet.infura.io/ws/v3/InputYourProjectId'
-  call_api_maxRetries: 10
-  retry_interval: 1
+
+  # track
+  eth:
+    call_api_maxRetries: 100
+    retry_interval: 1
+  erc20:
+    call_api_maxRetries: 100
+    retry_interval: 1
 
 server:
   recorder:

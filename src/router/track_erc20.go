@@ -144,7 +144,7 @@ forLoop:
 			toBlockNumber = block.Number
 
 			blockNumber, _ := utils.HexToDecimal(toBlockNumber)
-			tag := utils.DecimalToHex(blockNumber - 1)
+			tag := utils.DecimalToHex(blockNumber)
 
 			// Example: ERC-20 balanceOf(address)
 			methodName := "balanceOf"
@@ -200,7 +200,8 @@ forLoop2:
 		// Calculate elapsed time
 		elapsed := time.Since(start).Seconds()
 		if elapsed > float64(seconds) {
-			result := integrated.Result{Account: account, TokenAddress: tokenAddress, Balance: balance, TransferHistory: transferHistory}
+			result := integrated.Result{Account: account, TokenAddress: tokenAddress, Balance: balance,
+				TransferHistory: transferHistory}
 			fileName := tokenAddress + ".json"
 			folderPath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s", account)
 			filePath := viper.GetString("ROOT_PATH") + fmt.Sprintf("/json/transferHistory/%s/%s", account, fileName)
