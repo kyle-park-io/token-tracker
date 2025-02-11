@@ -70,9 +70,19 @@ func main() {
 		},
 	}
 
+	// Create the "dev" command
+	var devCmd = &cobra.Command{
+		Use:   "dev",
+		Short: "Start the server for executing experimental functions",
+		Run: func(cmd *cobra.Command, args []string) {
+			server.StartDevServer()
+		},
+	}
+
 	// Add commands to the root command
 	rootCmd.AddCommand(blockTimestampCmd)
 	rootCmd.AddCommand(transferTrackerCmd)
+	rootCmd.AddCommand(devCmd)
 
 	// Execute the root command
 	if err := rootCmd.Execute(); err != nil {

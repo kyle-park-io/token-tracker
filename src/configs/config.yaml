@@ -35,3 +35,12 @@ server:
       port: 8081
       url_prefix: '/tracker'
       api_url_prefix: '/api-tracker/v1'
+
+database:
+  host: 'localhost'
+  user: 'kyle'
+  password: '1q2w3e4r'
+  dbname: 'blockchain'
+  port: 5432
+  sslmode: 'disable'
+  timezone: 'Asia/Seoul'
