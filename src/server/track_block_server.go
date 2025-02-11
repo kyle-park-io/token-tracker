@@ -19,7 +19,7 @@ import (
 // @title Blockchain Transfer Tracker API
 // @version 1.0
 // @description API for tracking token transfers in blockchain
-// @host localhost:9090
+// @host localhost:8081
 // @BasePath /api/v1
 func StartTransferTrackerServer() {
 	r := gin.Default()
@@ -99,6 +99,6 @@ func StartTransferTrackerServer() {
 	}
 
 	r.LoadHTMLGlob(fmt.Sprintf("%s/html/%s/*.html", root_path, env))
-	logger.Log.Infoln("Starting transfer-tracker server on :9090")
-	r.Run(":9090") // listen and serve on 0.0.0.0:9090
+	logger.Log.Infoln("Starting transfer-tracker server on :8081")
+	r.Run(":" + viper.GetString(fmt.Sprintf("server.tracker.%s.port", env))) // listen and serve on 0.0.0.0:8081
 }

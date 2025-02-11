@@ -19,15 +19,19 @@ infura:
 server:
   recorder:
     dev:
+      port: 3005
       url_prefix: '/'
       api_url_prefix: ''
     prod:
+      port: 8080
       url_prefix: '/recorder'
       api_url_prefix: ''
   tracker:
     dev:
+      port: 3006
       url_prefix: '/'
       api_url_prefix: '/api/v1'
     prod:
+      port: 8081
       url_prefix: '/tracker'
       api_url_prefix: '/api-tracker/v1'

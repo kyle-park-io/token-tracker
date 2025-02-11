@@ -79,5 +79,5 @@ func StartBlockTimestampServer() {
 	logger.Log.Infoln("Starting block-timestamp server on :8080")
 
 	go executor.EnhancedBlockTimestampRecorder()
-	r.Run() // listen and serve on 0.0.0.0:8080
+	r.Run(":" + viper.GetString(fmt.Sprintf("server.recorder.%s.port", env))) // listen and serve on 0.0.0.0:8080
 }
